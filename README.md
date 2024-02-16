@@ -15,17 +15,17 @@ _TitleQuest_ is:
 – [🔊 Guess The Audio](https://guesstheaudio.com/)
 – [Episode](https://episode.wtf/)
 )
-2. plus a utility script to aggregate / share the results
+2. plus some Javascript to aggregate / share the results
 
 _TitleQuest_ is just a plain HTML file that you can open in any browser.
 
-Take note that some features are not available in some browsers, unless the HTML is served by a webserver. Alternatively a Go script is provided, to self-serve the HTML file at http://localhost:8080 and then open the default browser window.
+Take note that some features are not available in some browsers, unless the HTML is served by a webserver. To solve this issue, a Go app can self-serve the HTML file at http://localhost:8080.
 
 ## How to run 
 
 Double click the `index.html` file.
 
-Alternatively, run the Go server, if self-serving the HTML is required:
+To run the Go app / server (if required):
 
 ```
 $ go run .
@@ -33,7 +33,7 @@ $ go run .
 
 ## How to build
 
-Only the Go server needs a build step.
+Only the Go app / server needs a build step.
 
 ```
 $ go build -ldflags="-s -w"
