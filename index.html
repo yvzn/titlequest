@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Title Quest</title>
+    <link rel="canonical" href="https://codepen.io/yvzn/pen/YzgrQrB">
+
+    <style>
+        /* https://coolors.co/0f172a-b91c1c-5688c7-f9f9f9-e072a4 */
+        :root {
+            --color-bg-light: #f9f9f9;
+            --color-txt-light: #0f172a;
+            --color-link-light: #3D74B8;
+            --color-title-light: #B91C1C;
+            --color-title-txt-light: #f9f9f9;
+            --color-input-light: #ffffff;
+            --color-input-border-light: #ADADAD;
+            --color-input-txt-light: #0f172a;
+            --color-button-light: #ebebeb;
+            --color-button-border-light: #ffffff;
+            --color-button-txt-light: #0f172a;
+            --color-bg-dark: #0f172a;
+            --color-txt-dark: hsl(0, 0%, 77%);
+            --color-link-dark: hsl(213, 69%, 58%);
+            --color-title-dark: #B91C1C;
+            --color-title-txt-dark: #f9f9f9;
+            --color-input-dark: hsl(223, 48%, 21%);
+            --color-input-border-dark: hsl(222, 49%, 41%);
+            --color-input-txt-dark: #f9f9f9;
+            --color-button-dark: hsl(222, 49%, 41%);
+            --color-button-border-dark: hsl(222, 49%, 41%);
+            --color-button-txt-dark: #f9f9f9;
+            --color-bg: var(--color-bg-light);
+            --color-txt: var(--color-txt-light);
+            --color-link: var(--color-link-light);
+            --color-title: var(--color-title-light);
+            --color-title-txt: var(--color-title-txt-light);
+            --color-input: var(--color-input-light);
+            --color-input-border: var(--color-input-border-light);
+            --color-input-txt: var(--color-input-txt-light);
+            --color-button: var(--color-button-light);
+            --color-button-border: var(--color-button-border-light);
+            --color-button-txt: var(--color-button-txt-light);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: var(--color-bg-dark);
+                --color-txt: var(--color-txt-dark);
+                --color-link: var(--color-link-dark);
+                --color-title: var(--color-title-dark);
+                --color-title-txt: var(--color-title-txt-dark);
+                --color-input: var(--color-input-dark);
+                --color-input-border: var(--color-input-border-dark);
+                --color-input-txt: var(--color-input-txt-dark);
+                --color-button: var(--color-button-dark);
+                --color-button-border: var(--color-button-border-dark);
+                --color-button-txt: var(--color-button-txt-dark);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: ui-rounded, "Hiragino Maru Gothic ProN", Quicksand, Comfortaa, Manjari, "Arial Rounded MT", "Arial Rounded MT Bold", Calibri, source-sans-pro, sans-serif;
+            font-weight: normal;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-txt);
+        }
+
+        form {
+            display: grid;
+            gap: 4em;
+            grid-template-rows: auto auto;
+            grid-template-columns: auto auto;
+            justify-items: start;
+            padding: 2em 4em;
+        }
+
+        h1 {
+            grid-column: 1 / 3;
+            background-color: var(--color-title);
+            color: var(--color-title-txt);
+            border-radius: .3rem;
+            padding: .5rem 1rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h1 {
+                opacity: .8;
+            }
+        }
+
+        fieldset {
+            border: 0;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+        }
+
+        h3 {
+            padding: .5em;
+            margin-bottom: .5em;
+            font-size: medium;
+            font-weight: normal;
+        }
+
+        textarea {
+            background-color: var(--color-input);
+            border: solid 1px var(--color-input-border);
+            color: var(--color-input-txt);
+            height: 4rem;
+            padding: 1rem;
+            width: 100%;
+            grid-column: 1 / 3;
+            border-radius: .3rem;
+        }
+
+            textarea:focus {
+                height: 7rem;
+            }
+
+            textarea::placeholder {
+                color: var(--color-input-txt);
+                opacity: .5;
+            }
+
+        div {
+            width: 100%;
+        }
+
+            div > * + * {
+                margin-top: 2em;
+            }
+
+        button {
+            background-color: var(--color-button);
+            border-color: var(--color-button-border);
+            border-radius: .3rem;
+            border-width: thin;
+            color: var(--color-button-txt);
+            cursor: pointer;
+            margin-bottom: .5rem;
+            padding: .5em 1em;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .paste-button {
+                opacity: .75;
+            }
+        }
+
+        svg {
+            vertical-align: bottom;
+            stroke: var(--color-button-txt);
+        }
+
+        a {
+            color: var(--color-link);
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <form>
+        <h1>Title Quest</h1>
+        <div>
+            <h2>Today's games</h2>
+            <fieldset>
+                <h3><a href="https://framed.wtf/" data-for="framed" target="_blank">🎥 Framed</a></h3>
+                <button type="button" hidden data-for="framed" class="paste-button" aria-label="Paste results">📋</button>
+                <textarea id="framed" placeholder="Paste results here..."></textarea>
+            </fieldset>
+            <fieldset>
+                <h3><a href="https://guessthe.game/" data-for="guessthegame" target="_blank">🎮 GuessThe.game</a></h3>
+                <button type="button" hidden data-for="guessthegame" class="paste-button" aria-label="Paste results">📋</button>
+                <textarea id="guessthegame" placeholder="Paste results here..."></textarea>
+            </fieldset>
+            <fieldset>
+                <h3><a href="https://guesstheaudio.com/" data-for="guesstheaudio" target="_blank">🔊 Guess The Audio</a></h3>
+                <button type="button" hidden data-for="guesstheaudio" class="paste-button"
+                        aria-label="Paste results">
+                    📋
+                </button>
+                <textarea id="guesstheaudio" placeholder="Paste results here..."></textarea>
+            </fieldset>
+            <fieldset>
+                <h3><a href="https://episode.wtf/" data-for="episode" target="_blank">Episode</a></h3>
+                <button type="button" hidden data-for="episode" class="paste-button" aria-label="Paste results">📋</button>
+                <textarea id="episode" placeholder="Paste results here..."></textarea>
+            </fieldset>
+        </div>
+        <div>
+            <h2>Summary</h2>
+            <pre></pre>
+            <button type="button" id="share">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Share
+            </button>
+        </div>
+    </form>
+
+    <script>
+    const allTextareas = [...document.querySelectorAll("textarea")];
+
+    for (const textarea of allTextareas) {
+      textarea.addEventListener('change', handleChange);
+      textarea.addEventListener('focus', handleFocus);
+    }
+
+    const results = document.querySelector("pre");
+
+    function handleChange() {
+      const aggregated = allTextareas.reduce(
+        (accumulator, textarea) => [...accumulator, cleanup(textarea.value)],
+        []);
+      results.innerText = aggregated.join('\n');
+    }
+
+    function cleanup(text) {
+      return text
+        .replaceAll(/[\w\s#:/.]/g, "");
+    }
+
+    let focusedTextareaId = undefined;
+
+    function handleFocus(event) {
+      event.currentTarget.select();
+      focusedTextareaId = event.currentTarget.id;
+    }
+
+    document.querySelector("form").addEventListener("submit", function (event) {
+      event.preventDefault();
+    });
+
+    const shareButton = document.getElementById("share");
+    const shareButtonContent = shareButton.innerHTML;
+
+    shareButton.addEventListener("click", function (event) {
+      const button = event.currentTarget;
+      navigator.clipboard.writeText(results.innerText.trim());
+      button.innerHTML = 'Copied !';
+      setTimeout(() => button.innerHTML = shareButtonContent, 1000);
+    });
+
+    for (const pasteButton of document.querySelectorAll('.paste-button')) {
+      if (!navigator.clipboard.readText) continue;
+      pasteButton.hidden = false;
+      pasteButton.addEventListener('click', handleClick);
+    }
+
+    async function handleClick(event) {
+      const pasteButton = event.currentTarget;
+
+      const textarea = document.getElementById(pasteButton.dataset['for']);
+
+      await pasteClipboardContent(textarea)
+    }
+
+    async function pasteClipboardContent(target) {
+      var text = await navigator.clipboard.readText();
+      target.value = text;
+
+      const onChangeEvent = new Event('change');
+      target.dispatchEvent(onChangeEvent);
+    }
+
+    for (const gameLink of document.querySelectorAll('h3 a')) {
+      gameLink.addEventListener('click', function (event) {
+        const textarea = document.getElementById(gameLink.dataset['for']);
+        textarea.focus();
+
+        const onFocusEvent = new Event('focus');
+        textarea.dispatchEvent(onFocusEvent);        
+      });
+    }
+
+    addEventListener('focus', async function(event) {
+        if (!navigator.clipboard.readText) return;
+
+        if (!focusedTextareaId) return;
+        
+        let textarea = document.getElementById(focusedTextareaId);
+        let hasFocus = textarea && textarea === document.activeElement
+
+        if (!hasFocus) return;
+
+        await pasteClipboardContent(textarea)
+    })
+    </script>
+
+
+</body>
+
+</html>
