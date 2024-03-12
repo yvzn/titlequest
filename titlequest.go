@@ -26,6 +26,9 @@ func main() {
 
 Ctrl+C or close this window to exit...`)
 
+	// do not use ListenAndServe: it is blocking and will not run further actions after server started
+	// instead manually start listening on tcp 8080 and serve http in a goroutine
+
 	l, err := net.Listen("tcp", "localhost:8080")
 	if err != nil {
 		panic(err)
