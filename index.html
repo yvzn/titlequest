@@ -151,15 +151,21 @@ https://github.com/yvzn/titlequest/
             background-color: var(--color-input);
             border: solid 1px var(--color-input-border);
             color: var(--color-input-txt);
-            height: 7rem;
+            height: 3rem;
             padding: 1rem;
             width: 100%;
             grid-column: 1 / 3;
             border-radius: .3rem;
+            overflow: hidden;
+        }
+
+        textarea:focus-within {
+            height: 7rem;
+            overflow: auto;
         }
 
         @media screen and (max-width: 48em) {
-            textarea {
+            textarea:focus-within {
                 height: 4rem;
             }
         }
@@ -232,6 +238,11 @@ https://github.com/yvzn/titlequest/
                 <button type="button" hidden data-for="guesstheaudio" class="paste-button"
                     aria-label="Paste results">📋</button>
                 <textarea id="guesstheaudio" placeholder="Paste results here..."></textarea>
+            </fieldset>
+            <fieldset>
+                <h3><a href="https://gaps.wtf/" id="link-gaps" data-for="gaps">Gaps</a></h3>
+                <button type="button" hidden data-for="gaps" class="paste-button" aria-label="Paste results">📋</button>
+                <textarea id="gaps" placeholder="Paste results here..."></textarea>
             </fieldset>
             <fieldset>
                 <h3><a href="https://episode.wtf/" id="link-episode" data-for="episode">Episode</a></h3>
@@ -320,14 +331,22 @@ https://github.com/yvzn/titlequest/
             ['framed', /Framed #/],
             ['guessthegame', /GuessTheGame #/],
             ['guesstheaudio', /GuessTheAudio #/],
+            ['gaps', /Gaps #/],
             ['episode', /Episode #/],
         ])
 
+        const textareaFormatter = new Map([
+            ['gaps', s => s.replaceAll('🎥', '🎞️')],
+        ])
+
         async function pasteClipboardContent(target) {
-            const text = await navigator.clipboard.readText();
+            let text = await navigator.clipboard.readText();
 
             if (textareaValidator.has(target.id) && !(textareaValidator.get(target.id).test(text)))
                 return;
+
+            if (textareaFormatter.has(target.id))
+                text = textareaFormatter.get(target.id).call(null, text)
 
             target.value = text;
 
