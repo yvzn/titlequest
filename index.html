@@ -31,8 +31,7 @@ https://github.com/yvzn/titlequest/
             --color-title-light: #B91C1C;
             --color-title-txt-light: #f9f9f9;
             --color-input-light: #ffffff;
-            --color-input-border-light: #ADADAD;
-            --color-input-txt-light: #0f172a;
+            --color-input-border-light: #CCCCCC;
             --color-button-light: #ebebeb;
             --color-button-border-light: #ffffff;
             --color-button-txt-light: #0f172a;
@@ -43,7 +42,6 @@ https://github.com/yvzn/titlequest/
             --color-title-txt-dark: #f9f9f9;
             --color-input-dark: hsl(223, 48%, 21%);
             --color-input-border-dark: hsl(222, 49%, 41%);
-            --color-input-txt-dark: #f9f9f9;
             --color-button-dark: hsl(222, 49%, 41%);
             --color-button-border-dark: hsl(222, 49%, 41%);
             --color-button-txt-dark: #f9f9f9;
@@ -54,7 +52,6 @@ https://github.com/yvzn/titlequest/
             --color-title-txt: var(--color-title-txt-light);
             --color-input: var(--color-input-light);
             --color-input-border: var(--color-input-border-light);
-            --color-input-txt: var(--color-input-txt-light);
             --color-button: var(--color-button-light);
             --color-button-border: var(--color-button-border-light);
             --color-button-txt: var(--color-button-txt-light);
@@ -72,14 +69,13 @@ https://github.com/yvzn/titlequest/
                 --color-title-txt: var(--color-title-txt-dark);
                 --color-input: var(--color-input-dark);
                 --color-input-border: var(--color-input-border-dark);
-                --color-input-txt: var(--color-input-txt-dark);
                 --color-button: var(--color-button-dark);
                 --color-button-border: var(--color-button-border-dark);
                 --color-button-txt: var(--color-button-txt-dark);
             }
         }
 
-        @media screen and (max-width: 48em) {
+        @media screen and (max-width: 63em) {
             :root {
                 --space-1x: 1em;
                 --space-2x: 2em;
@@ -103,7 +99,7 @@ https://github.com/yvzn/titlequest/
             display: grid;
             gap: var(--space-2x);
             grid-template-rows: auto auto;
-            grid-template-columns: auto auto;
+            grid-template-columns: 2fr 1fr;
             justify-items: start;
             padding: var(--space-2x);
         }
@@ -122,7 +118,7 @@ https://github.com/yvzn/titlequest/
             }
         }
 
-        @media screen and (max-width: 48em) {
+        @media screen and (max-width: 63em) {
             form {
                 grid-template-columns: auto;
                 grid-template-rows: auto auto auto;
@@ -137,8 +133,12 @@ https://github.com/yvzn/titlequest/
             border: 0;
             display: grid;
             grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
             align-items: center;
             align-content: center;
+            border-radius: .3rem;
+            border: solid 1px var(--color-input-border);
+            padding: var(--space-1x);
         }
 
         h3 {
@@ -146,34 +146,22 @@ https://github.com/yvzn/titlequest/
             margin-bottom: .5em;
             font-size: medium;
             font-weight: normal;
+            text-wrap: nowrap;
         }
 
         textarea {
-            background-color: var(--color-input);
-            border: solid 1px var(--color-input-border);
-            color: var(--color-input-txt);
-            height: 4rem;
-            padding: 1rem;
-            width: 100%;
             grid-column: 1 / 3;
-            border-radius: .3rem;
-            overflow: hidden;
+            grid-row: 2 / 3;
+            visibility: hidden;
         }
 
-        textarea:focus-within {
-            height: 7rem;
-            overflow: auto;
-        }
-
-        @media screen and (max-width: 48em) {
-            textarea:focus-within {
-                height: 4rem;
-            }
-        }
-
-        textarea::placeholder {
-            color: var(--color-input-txt);
-            opacity: .5;
+        samp {
+            display: block;
+            grid-column: 1 / 3;
+            grid-row: 2 / 3;
+            width: 100%;
+            height: 100%;
+            padding: .5em;
         }
 
         section {
@@ -195,10 +183,10 @@ https://github.com/yvzn/titlequest/
         }
 
         section:first-of-type fieldset {
-            width: 45%;
+            width: 16em;
         }
 
-        @media screen and (max-width: 48em) {
+        @media screen and (max-width: 63em) {
             section:first-of-type fieldset {
                 width: 90%;
             }
@@ -238,46 +226,52 @@ https://github.com/yvzn/titlequest/
         <section>
             <h2>Today's games</h2>
             <fieldset>
-                <h3><a href="https://framed.wtf/" id="link-framed" data-for="framed">🎥 Framed</a></h3>
+                <h3><a href="https://framed.wtf/" id="link-framed" data-for="framed">Framed</a></h3>
                 <button type="button" hidden data-for="framed" class="paste-button"
                     aria-label="Paste results">📋</button>
-                <textarea id="framed" placeholder="Paste results here..."></textarea>
+                <textarea id="framed" placeholder="Paste results here..."></textarea>                
+                <samp id="score-framed"></samp>
             </fieldset>
             <fieldset>
-                <h3><a href="https://guessthe.game/" id="link-guessthegame" data-for="guessthegame">🎮 GuessThe.game</a>
+                <h3><a href="https://guessthe.game/" id="link-guessthegame" data-for="guessthegame">GuessThe.game</a>
                 </h3>
                 <button type="button" hidden data-for="guessthegame" class="paste-button"
                     aria-label="Paste results">📋</button>
                 <textarea id="guessthegame" placeholder="Paste results here..."></textarea>
+                <samp id="score-guessthegame"></samp>
             </fieldset>
             <fieldset>
-                <h3><a href="https://guesstheaudio.com/" id="link-guesstheaudio" data-for="guesstheaudio">🔊 Guess The
+                <h3><a href="https://guesstheaudio.com/" id="link-guesstheaudio" data-for="guesstheaudio">Guess The
                         Audio</a></h3>
                 <button type="button" hidden data-for="guesstheaudio" class="paste-button"
                     aria-label="Paste results">📋</button>
                 <textarea id="guesstheaudio" placeholder="Paste results here..."></textarea>
+                <samp id="score-guesstheaudio"></samp>
             </fieldset>
             <fieldset>
-                <h3><a href="https://gaps.wtf/" id="link-gaps" data-for="gaps">🎞️ Gaps</a></h3>
+                <h3><a href="https://gaps.wtf/" id="link-gaps" data-for="gaps">Gaps</a></h3>
                 <button type="button" hidden data-for="gaps" class="paste-button" aria-label="Paste results">📋</button>
                 <textarea id="gaps" placeholder="Paste results here..."></textarea>
+                <samp id="score-gaps"></samp>
             </fieldset>
             <fieldset>
-                <h3><a href="https://episode.wtf/" id="link-episode" data-for="episode">📺 Episode</a></h3>
+                <h3><a href="https://episode.wtf/" id="link-episode" data-for="episode">Episode</a></h3>
                 <button type="button" hidden data-for="episode" class="paste-button"
                     aria-label="Paste results">📋</button>
                 <textarea id="episode" placeholder="Paste results here..."></textarea>
+                <samp id="score-episode"></samp>
             </fieldset>
             <fieldset>
-                <h3><a href="https://guessthebook.app/" id="link-guessthebook" data-for="guessthebook">📕 Guess The
+                <h3><a href="https://guessthebook.app/" id="link-guessthebook" data-for="guessthebook">Guess The
                         Book</a></h3>
                 <button type="button" hidden data-for="guessthebook" class="paste-button"
                     aria-label="Paste results">📋</button>
                 <textarea id="guessthebook" placeholder="Paste results here..."></textarea>
+                <samp id="score-guessthebook"></samp>
             </fieldset>
         </section>
         <section>
-            <h2>Summary</h2>
+            <h2>Total score</h2>
             <pre></pre>
             <button type="button" id="share">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -305,11 +299,16 @@ https://github.com/yvzn/titlequest/
 
         const results = document.querySelector("pre");
 
-        function handleChange() {
+        function handleChange(event) {
+            const textareaId = event.currentTarget.id;
+            const scoreTag = document.getElementById(`score-${textareaId}`);
+            var score = cleanup(event.currentTarget.value);
+            scoreTag.innerText = score.substring(score.indexOf(' ') + 1);
+
             const aggregated = allTextareas.reduce(
                 (accumulator, textarea) => [...accumulator, cleanup(textarea.value)],
                 []);
-            results.innerText = aggregated.join('\n');
+            results.innerText = aggregated.join('\n');            
         }
 
         function cleanup(text) {
@@ -392,14 +391,9 @@ https://github.com/yvzn/titlequest/
 
         addEventListener('focus', async function (event) {
             if (!navigator.clipboard.readText) return;
-
             if (!focusedTextareaId) return;
 
-            let textarea = document.getElementById(focusedTextareaId);
-            let hasFocus = textarea && textarea === document.activeElement
-
-            if (!hasFocus) return;
-
+            let textarea = document.getElementById(focusedTextareaId);            
             await pasteClipboardContent(textarea);
 
             focusedTextareaId = undefined;
