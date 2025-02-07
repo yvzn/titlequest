@@ -233,6 +233,13 @@ https://github.com/yvzn/titlequest/
                 <samp id="score-framed"></samp>
             </fieldset>
             <fieldset>
+                <h3><a href="https://framed.wtf/one-frame" id="link-oneframe" data-for="oneframe">Framed 1-Frame</a></h3>
+                <button type="button" hidden data-for="oneframe" class="paste-button"
+                    aria-label="Paste results">📋</button>
+                <textarea id="oneframe" placeholder="Paste results here..."></textarea>
+                <samp id="score-oneframe"></samp>
+            </fieldset>
+            <fieldset>
                 <h3><a href="https://guessthe.game/" id="link-guessthegame" data-for="guessthegame">GuessThe.game</a>
                 </h3>
                 <button type="button" hidden data-for="guessthegame" class="paste-button"
@@ -315,16 +322,17 @@ https://github.com/yvzn/titlequest/
             const aggregated = allTextareas.reduce(
                 (accumulator, textarea) => [...accumulator, formatScore(textarea.id, textarea.value)],
                 []);
-            results.innerText = aggregated.join('\n');
+            results.innerText = aggregated.filter(Boolean).join('\n');
         }
 
         const scoreFormatter = new Map([
             ['gaps', s => s.replaceAll('🎥', '🎞️')],
             ['faces', s => { let i = 0; return s.replace(/👤/g, match => ++i === 2 ? '\n👤' : match) }],
+            ['oneframe', s => s.replaceAll('🎥', '1️⃣')],
         ])
 
         function formatScore(gameId, text) {
-            var formatted = text.replaceAll(/[\w\s#:/.]/g, "");
+            var formatted = text.replaceAll(/[\w\s#:\-/.]/g, "");
 
             if (scoreFormatter.has(gameId))
                 formatted = scoreFormatter.get(gameId).call(null, formatted)
@@ -369,6 +377,7 @@ https://github.com/yvzn/titlequest/
 
         const textareaValidator = new Map([
             ['framed', /Framed #/],
+            ['oneframe', /One Frame Challenge #/],
             ['guessthegame', /GuessTheGame #/],
             ['guesstheaudio', /GuessTheAudio #/],
             ['gaps', /Gaps\s+#/],
