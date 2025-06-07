@@ -276,6 +276,13 @@ https://github.com/yvzn/titlequest/
                 <samp id="score-faces"></samp>
             </fieldset>
             <fieldset>
+                <h3><a href="https://bandle.app/" id="link-bandle" data-for="bandle">Bandle</a></h3>
+                <button type="button" hidden data-for="bandle" class="paste-button"
+                    aria-label="Paste results">📋</button>
+                <textarea id="bandle" placeholder="Paste results here..."></textarea>
+                <samp id="score-bandle"></samp>
+            </fieldset>
+            <fieldset>
                 <h3><a href="https://guessthebook.app/" id="link-guessthebook" data-for="guessthebook">Guess The
                         Book</a></h3>
                 <button type="button" hidden data-for="guessthebook" class="paste-button"
@@ -329,10 +336,11 @@ https://github.com/yvzn/titlequest/
             ['gaps', s => s.replaceAll('🎥', '🎞️')],
             ['faces', s => { let i = 0; return s.replace(/👤/g, match => ++i === 2 ? '\n👤' : match) }],
             ['oneframe', s => s.replaceAll('🎥', '1️⃣')],
+            ['bandle', s => '🥁' + s]
         ])
 
         function formatScore(gameId, text) {
-            var formatted = text.replaceAll(/[\w\s#:\-/.]/g, "");
+            var formatted = text.normalize("NFD").replaceAll(/[\w\s#:\-/.\(\)%]/g, "");
 
             if (scoreFormatter.has(gameId))
                 formatted = scoreFormatter.get(gameId).call(null, formatted)
@@ -384,6 +392,7 @@ https://github.com/yvzn/titlequest/
             ['episode', /Episode #/],
             ['faces', /Faces #/],
             ['guessthebook', /GuessTheBook #/],
+            ['bandle', /Bandle #/],
         ])
 
         async function pasteClipboardContent(target) {
