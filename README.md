@@ -17,26 +17,21 @@ _TitleQuest_ is:
 )
 2. plus some Javascript to aggregate / share the results
 
-_TitleQuest_ is just a plain HTML file that you can open in any browser.
-
-Take note that some features are not available in some browsers, unless the HTML is served by a webserver. To solve this issue, a Go app can self-serve the HTML file at http://localhost:8080.
-
 ## How to run 
 
-Double click the `index.html` file.
+_TitleQuest_ is a static HTML page with some Javascript. It is packaged with [ViteJS](https://vitejs.dev/).
 
-To run the Go app / server (if required):
+To run the app locally, you can use the following command:
 
 ```
-$ go run .
+$ npm install
+$ npm run dev
 ```
 
 ## How to build
 
-Only the Go app / server needs a build step.
+To build the app for production, you can use the following command:
 
 ```
-$ go build -ldflags="-s -w"
-
-$ .\titlequest.go.exe
+$ npm run build
 ```

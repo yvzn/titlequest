@@ -1,0 +1,194 @@
+/* https://coolors.co/0f172a-b91c1c-5688c7-f9f9f9-e072a4 */
+:root {
+  --color-bg-light: #f9f9f9;
+  --color-txt-light: #0f172a;
+  --color-link-light: #3D74B8;
+  --color-title-light: #B91C1C;
+  --color-title-txt-light: #f9f9f9;
+  --color-input-light: #ffffff;
+  --color-input-border-light: #CCCCCC;
+  --color-button-light: #ebebeb;
+  --color-button-border-light: #ffffff;
+  --color-button-txt-light: #0f172a;
+  --color-bg-dark: #0f172a;
+  --color-txt-dark: hsl(0, 0%, 77%);
+  --color-link-dark: hsl(213, 69%, 58%);
+  --color-title-dark: #B91C1C;
+  --color-title-txt-dark: #f9f9f9;
+  --color-input-dark: hsl(223, 48%, 21%);
+  --color-input-border-dark: hsl(222, 49%, 41%);
+  --color-button-dark: hsl(222, 49%, 41%);
+  --color-button-border-dark: hsl(222, 49%, 41%);
+  --color-button-txt-dark: #f9f9f9;
+  --color-bg: var(--color-bg-light);
+  --color-txt: var(--color-txt-light);
+  --color-link: var(--color-link-light);
+  --color-title: var(--color-title-light);
+  --color-title-txt: var(--color-title-txt-light);
+  --color-input: var(--color-input-light);
+  --color-input-border: var(--color-input-border-light);
+  --color-button: var(--color-button-light);
+  --color-button-border: var(--color-button-border-light);
+  --color-button-txt: var(--color-button-txt-light);
+
+  --space-1x: 2em;
+  --space-2x: 4em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--color-bg-dark);
+    --color-txt: var(--color-txt-dark);
+    --color-link: var(--color-link-dark);
+    --color-title: var(--color-title-dark);
+    --color-title-txt: var(--color-title-txt-dark);
+    --color-input: var(--color-input-dark);
+    --color-input-border: var(--color-input-border-dark);
+    --color-button: var(--color-button-dark);
+    --color-button-border: var(--color-button-border-dark);
+    --color-button-txt: var(--color-button-txt-dark);
+  }
+}
+
+@media screen and (max-width: 63em) {
+  :root {
+    --space-1x: 1em;
+    --space-2x: 2em;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  font-family: ui-rounded, "Hiragino Maru Gothic ProN", Quicksand, Comfortaa, Manjari, "Arial Rounded MT", "Arial Rounded MT Bold", Calibri, source-sans-pro, sans-serif;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-txt);
+}
+
+form {
+  display: grid;
+  gap: var(--space-2x);
+  grid-template-rows: auto auto;
+  grid-template-columns: 2fr 1fr;
+  justify-items: start;
+  padding: var(--space-2x);
+}
+
+h1 {
+  grid-column: 1 / 3;
+  background-color: var(--color-title);
+  color: var(--color-title-txt);
+  border-radius: .3rem;
+  padding: .5rem 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  h1 {
+    opacity: .8;
+  }
+}
+
+@media screen and (max-width: 63em) {
+  form {
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto;
+  }
+
+  h1 {
+    grid-column-end: 2
+  }
+}
+
+fieldset {
+  border: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  align-content: center;
+  border-radius: .3rem;
+  border: solid 1px var(--color-input-border);
+  padding: var(--space-1x);
+}
+
+h3 {
+  padding: .5em;
+  margin-bottom: .5em;
+  font-size: medium;
+  font-weight: normal;
+  text-wrap: nowrap;
+}
+
+textarea {
+  grid-column: 1 / 3;
+  grid-row: 2 / 3;
+  visibility: hidden;
+}
+
+samp {
+  display: block;
+  grid-column: 1 / 3;
+  grid-row: 2 / 3;
+  width: 100%;
+  height: 100%;
+  padding: .5em;
+}
+
+section {
+  width: 100%;
+}
+
+section>*+* {
+  margin-top: var(--space-1x);
+}
+
+section:first-of-type {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-1x);
+}
+
+section:first-of-type h2 {
+  flex-basis: 100%;
+}
+
+section:first-of-type fieldset {
+  width: 16em;
+}
+
+@media screen and (max-width: 63em) {
+  section:first-of-type fieldset {
+    width: 90%;
+  }
+}
+
+button {
+  background-color: var(--color-button);
+  border-color: var(--color-button-border);
+  border-radius: .3rem;
+  border-width: thin;
+  color: var(--color-button-txt);
+  cursor: pointer;
+  margin-bottom: .5rem;
+  padding: .5em 1em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .paste-button {
+    opacity: .75;
+  }
+}
+
+svg {
+  vertical-align: bottom;
+  stroke: var(--color-button-txt);
+}
+
+a {
+  color: var(--color-link);
+}
