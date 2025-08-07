@@ -342,7 +342,7 @@ https://github.com/yvzn/titlequest/
         function formatScore(gameId, text) {
             var formatted = text.normalize("NFD").replaceAll(/[\w\s#:\-/.\(\)%]/g, "");
 
-            if (scoreFormatter.has(gameId))
+            if (Boolean(formatted) && scoreFormatter.has(gameId))
                 formatted = scoreFormatter.get(gameId).call(null, formatted)
 
             return formatted;
