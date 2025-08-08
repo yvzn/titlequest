@@ -31,8 +31,8 @@
   --color-button-border: var(--color-button-border-light);
   --color-button-txt: var(--color-button-txt-light);
 
-  --space-1x: 2em;
-  --space-2x: 4em;
+  --space-1x: 2rem;
+  --space-2x: 4rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,6 +55,10 @@
     --space-1x: 1em;
     --space-2x: 2em;
   }
+}
+
+@view-transition {
+  navigation: auto;
 }
 
 * {
@@ -86,6 +90,11 @@ h1 {
   padding: .5rem 1rem;
 }
 
+h1 a {
+  color: var(--color-title-txt);
+  text-decoration: none;
+}
+
 @media (prefers-color-scheme: dark) {
   h1 {
     opacity: .8;
@@ -99,7 +108,7 @@ nav {
 
 @media screen and (max-width: 63em) {
   form {
-    grid-template-columns: auto;
+    grid-template-columns: 1fr auto;
     grid-template-rows: auto auto auto;
   }
 }
@@ -145,6 +154,12 @@ samp {
 
 section {
   width: 100%;
+}
+
+@media screen and (max-width: 63em) {
+  section {
+    grid-column: 1 / 3;
+  }
 }
 
 section>*+* {

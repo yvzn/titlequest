@@ -117,19 +117,14 @@ addEventListener('focus', async function (event) {
   focusedTextareaId = undefined
 })
 
-addEventListener('load', function (event) {
-  let navLinks = [...document.querySelectorAll('nav a')]
-    .reduce((acc, link) => {
-      acc[link.getAttribute('href')] = link
-      return acc
-    }, {})
+const linkCookieConsent = document.getElementById("link-cookie-consent")
+const linkStats = document.getElementById("link-stats")
 
-  const cookieConsent = Cookies.get('cookie-consent')
-  if (cookieConsent === 'true') {
-    navLinks['cookie-consent.html'].hidden = true
-    navLinks['stats.html'].hidden = false
-  } else {
-    navLinks['cookie-consent.html'].hidden = false
-    navLinks['stats.html'].hidden = true
-  }
-})
+const cookieConsent = Cookies.get('cookie-consent')
+if (cookieConsent === 'true') {
+  linkCookieConsent.hidden = true
+  linkStats.hidden = false
+} else {
+  linkCookieConsent.hidden = false
+  linkStats.hidden = true
+}

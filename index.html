@@ -26,10 +26,12 @@ https://github.com/yvzn/titlequest/
 
 <body>
     <form>
-        <h1>Title Quest</h1>
+        <h1>
+            <a href="/" target="_top">Title Quest</a>
+        </h1>
         <nav>
-            <a hidden href="cookie-consent.html">Stats</a>
-            <a hidden href="stats.html">Stats</a>
+            <a id="link-cookie-consent" hidden target="_self" href="cookie-consent.html">Stats</a>
+            <a id="link-stats" hidden target="_self" href="stats.html">Stats</a>
         </nav>
         <section>
             <h2>Today's games</h2>
@@ -41,7 +43,8 @@ https://github.com/yvzn/titlequest/
                 <samp id="score-framed"></samp>
             </fieldset>
             <fieldset>
-                <h3><a href="https://framed.wtf/one-frame" id="link-oneframe" data-for="oneframe">Framed 1-Frame</a></h3>
+                <h3><a href="https://framed.wtf/one-frame" id="link-oneframe" data-for="oneframe">Framed 1-Frame</a>
+                </h3>
                 <button type="button" hidden data-for="oneframe" class="paste-button"
                     aria-label="Paste results">📋</button>
                 <textarea id="oneframe" placeholder="Paste results here..."></textarea>
@@ -119,7 +122,6 @@ https://github.com/yvzn/titlequest/
     </form>
 
     <script type="module" src="/src/index.js"></script>
-
 </body>
 
 </html>
