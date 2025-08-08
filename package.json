@@ -12,5 +12,8 @@
     "@vitejs/plugin-legacy": "^6.1.1",
     "terser": "^5.43.1",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "js-cookie": "^3.0.5"
   }
 }
