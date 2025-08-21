@@ -12,18 +12,18 @@ footer {
 }
 
 footer a {
-    border-color: var(--color-title);
-    color: var(--color-title);
-    border-radius: .3rem;
-    border-width: thin;
-    border-style: solid;
-    cursor: pointer;
-    padding: .5em 1em;
-    text-decoration: none;
+  margin-right: var(--space-1x);
+  text-decoration: none;
 }
 
-footer a:first-of-type {
-    border: 0;
-    background-color: var(--color-title);
-    color: var(--color-title-txt);
+footer a i {
+    font-style: normal;
+}
+
+footer a span {
+    text-decoration: underline;
+}
+
+footer a#link-reject-cookies {
+    color: var(--color-txt);
 }
