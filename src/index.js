@@ -1,158 +1,279 @@
-import Cookies from 'js-cookie'
+/**
+ * Title Quest - Main Application Entry Point
+ * 
+ * A set of bookmarks to play selected title-guessing games.
+ * This module orchestrates the main application functionality using specialized modules.
+ */
 
+import Cookies from 'js-cookie'
 import './style.css'
 
-const allTextareas = [...document.querySelectorAll("textarea")]
+// Import utility modules
+import { updateScoreDisplay, updateResultsDisplay } from './score-manager.js'
+import { setupPasteButton, pasteToTextarea, writeToClipboard, isClipboardReadAvailable } from './clipboard-utils.js'
+import { 
+  getAllTextareas, 
+  getScoreDisplay, 
+  getResultsElement, 
+  getAllPasteButtons,
+  getAllGameLinks,
+  getShareButton,
+  getFormElement,
+  focusAndSelectTextarea,
+  showTemporaryButtonFeedback,
+  isIndexedDBAvailable,
+  getCookieConsentElements
+} from './dom-utils.js'
 
-for (const textarea of allTextareas) {
-  textarea.addEventListener('change', updateScoreDisplay);
-  textarea.addEventListener('focus', focusAndSelectTextarea);
-}
-
-const results = document.querySelector("pre")
-
-function updateScoreDisplay(event) {
-  const textareaId = event.currentTarget.id
-  const scoreTag = document.getElementById(`score-${textareaId}`)
-  let score = formatScore(textareaId, event.currentTarget.value)
-  scoreTag.innerText = score.substring(score.indexOf(' ') + 1)
-
-  const aggregated = allTextareas.reduce(
-    (accumulator, textarea) => [...accumulator, formatScore(textarea.id, textarea.value)],
-    [])
-  results.innerText = aggregated.filter(Boolean).join('\n')
-}
-
-const scoreFormatter = new Map([
-  ['gaps', s => s.replaceAll('🎥', '🎞️')],
-  ['faces', s => { let i = 0; return s.replace(/👤/g, match => ++i === 2 ? '\n👤' : match) }],
-  ['oneframe', s => s.replaceAll('🎥', '1️⃣')],
-  ['bandle', s => '🥁' + s]
-])
-
-function formatScore(gameId, text) {
-  let formatted = text.normalize("NFD").replaceAll(/[\w\s#:\-/.\(\)%]/g, "")
-
-  if (Boolean(formatted) && scoreFormatter.has(gameId))
-    formatted = scoreFormatter.get(gameId).call(null, formatted)
-
-  return formatted
-}
+// ============================================================================
+// GLOBAL STATE
+// ============================================================================
 
 let focusedTextareaId = undefined
 
-function focusAndSelectTextarea(event) {
-  event.currentTarget.select()
-  focusedTextareaId = event.currentTarget.id
+// ============================================================================
+// DOM ELEMENT REFERENCES
+// ============================================================================
+
+const allTextareas = getAllTextareas()
+const resultsElement = getResultsElement()
+const shareButton = getShareButton()
+const formElement = getFormElement()
+
+// ============================================================================
+// EVENT HANDLERS
+// ============================================================================
+
+/**
+ * Handle textarea change events to update score displays
+ * @param {Event} event - The change event
+ */
+function handleTextareaChange(event) {
+  const textarea = event.currentTarget
+  const scoreDisplay = getScoreDisplay(textarea.id)
+  
+  // Update individual score display
+  updateScoreDisplay(textarea, scoreDisplay)
+  
+  // Update aggregated results display
+  updateResultsDisplay(allTextareas, resultsElement)
 }
 
-document.querySelector("form").addEventListener("submit", function (event) {
-  event.preventDefault()
-})
+/**
+ * Handle textarea focus events
+ * @param {Event} event - The focus event
+ */
+function handleTextareaFocus(event) {
+  const textarea = event.currentTarget
+  focusAndSelectTextarea(textarea)
+  focusedTextareaId = textarea.id
+}
 
-const shareButton = document.getElementById("share")
-const shareButtonContent = shareButton.innerHTML
-
-shareButton.addEventListener("click", function (event) {
+/**
+ * Handle share button clicks
+ * @param {Event} event - The click event
+ */
+async function handleShareButtonClick(event) {
   const button = event.currentTarget
-  navigator.clipboard.writeText(results.innerText.trim())
-  button.innerHTML = 'Copied !'
-  setTimeout(() => button.innerHTML = shareButtonContent, 1000)
-})
-
-for (const pasteButton of document.querySelectorAll('.paste-button')) {
-  if (!navigator.clipboard.readText) continue
-  pasteButton.hidden = false
-  pasteButton.addEventListener('click', pasteManuallyFromClipboard)
+  const textToShare = resultsElement.innerText.trim()
+  
+  try {
+    await writeToClipboard(textToShare)
+    showTemporaryButtonFeedback(button, 'Copied !', 1000)
+  } catch (error) {
+    console.warn('Failed to copy to clipboard:', error)
+    showTemporaryButtonFeedback(button, 'Failed to copy', 1000)
+  }
 }
 
-async function pasteManuallyFromClipboard(event) {
-  const pasteButton = event.currentTarget
-
-  const textarea = document.getElementById(pasteButton.dataset['for'])
-
-  await pasteClipboardContent(textarea)
-}
-
-const textareaValidator = new Map([
-  ['framed', /Framed #/],
-  ['oneframe', /One Frame Challenge #/],
-  ['guessthegame', /GuessTheGame #/],
-  ['guesstheaudio', /GuessTheAudio #/],
-  ['gaps', /Gaps\s+#/],
-  ['episode', /Episode #/],
-  ['faces', /Faces #/],
-  ['guessthebook', /GuessTheBook #/],
-  ['bandle', /Bandle #/],
-])
-
-async function pasteClipboardContent(target) {
-  let text = await navigator.clipboard.readText()
-
-  if (textareaValidator.has(target.id) && !(textareaValidator.get(target.id).test(text)))
-    return
-
-  target.value = text
-
-  const onChangeEvent = new Event('change')
-  target.dispatchEvent(onChangeEvent)
-}
-
-for (const gameLink of document.querySelectorAll('h3 a')) {
-  gameLink.addEventListener('click', function (event) {
-    const textarea = document.getElementById(gameLink.dataset['for'])
+/**
+ * Handle game link clicks to focus corresponding textarea
+ * @param {Event} event - The click event
+ */
+function handleGameLinkClick(event) {
+  const gameLink = event.currentTarget
+  const targetTextareaId = gameLink.dataset['for']
+  const textarea = document.getElementById(targetTextareaId)
+  
+  if (textarea) {
     textarea.focus()
+    const focusEvent = new Event('focus', { bubbles: true })
+    textarea.dispatchEvent(focusEvent)
+  }
+}
 
-    const onFocusEvent = new Event('focus')
-    textarea.dispatchEvent(onFocusEvent)
+/**
+ * Handle window focus events for automatic clipboard pasting
+ */
+async function handleWindowFocus() {
+  if (!isClipboardReadAvailable() || !focusedTextareaId) {
+    return
+  }
+
+  const textarea = document.getElementById(focusedTextareaId)
+  if (textarea) {
+    await pasteToTextarea(textarea)
+  }
+
+  focusedTextareaId = undefined
+}
+
+// ============================================================================
+// INITIALIZATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Initialize textarea event listeners
+ */
+function initializeTextareas() {
+  allTextareas.forEach(textarea => {
+    textarea.addEventListener('change', handleTextareaChange)
+    textarea.addEventListener('focus', handleTextareaFocus)
   })
 }
 
-addEventListener('focus', async function (event) {
-  if (!navigator.clipboard.readText) return
-  if (!focusedTextareaId) return
+/**
+ * Initialize form submission prevention
+ */
+function initializeForm() {
+  if (formElement) {
+    formElement.addEventListener("submit", (event) => {
+      event.preventDefault()
+    })
+  }
+}
 
-  let textarea = document.getElementById(focusedTextareaId)
-  await pasteClipboardContent(textarea)
+/**
+ * Initialize share button functionality
+ */
+function initializeShareButton() {
+  if (shareButton) {
+    shareButton.addEventListener("click", handleShareButtonClick)
+  }
+}
 
-  focusedTextareaId = undefined
-})
+/**
+ * Initialize paste buttons functionality
+ */
+function initializePasteButtons() {
+  const pasteButtons = getAllPasteButtons()
+  pasteButtons.forEach(setupPasteButton)
+}
 
-addEventListener('DOMContentLoaded', function () {
-  const isIndexedDBAvailable = 'indexedDB' in window;
-  if (!isIndexedDBAvailable) return;
+/**
+ * Initialize game links functionality
+ */
+function initializeGameLinks() {
+  const gameLinks = getAllGameLinks()
+  gameLinks.forEach(gameLink => {
+    gameLink.addEventListener('click', handleGameLinkClick)
+  })
+}
 
-  const linkCookieConsent = document.getElementById("link-cookie-consent")
-  const linkStats = document.getElementById("link-stats")
+/**
+ * Initialize window-level event listeners
+ */
+function initializeWindowEvents() {
+  window.addEventListener('focus', handleWindowFocus)
+}
 
+// ============================================================================
+// COOKIE CONSENT AND DATABASE FUNCTIONALITY
+// ============================================================================
+
+/**
+ * Initialize cookie consent functionality and database features
+ */
+function initializeCookieConsent() {
+  if (!isIndexedDBAvailable()) {
+    return
+  }
+
+  const { linkCookieConsent, linkStats } = getCookieConsentElements()
   const cookieConsent = Cookies.get('cookie-consent')
+  
+  // Show/hide appropriate links based on consent
   if (cookieConsent === 'true') {
     linkCookieConsent.hidden = true
     linkStats.hidden = false
+    
+    // Initialize database functionality if consent is given
+    initializeDatabaseFeatures()
   } else {
     linkCookieConsent.hidden = false
     linkStats.hidden = true
   }
+}
 
-  if (cookieConsent === 'true') {
-    addEventListener('load', async function () {
-      const module = await import('./db-service');
-      const dbService = module.dbService;
+/**
+ * Initialize database features for score tracking
+ */
+function initializeDatabaseFeatures() {
+  window.addEventListener('load', async () => {
+    try {
+      // Dynamically import database service
+      const module = await import('./db-service')
+      const dbService = module.dbService
+      
+      // Connect to database
+      await dbService.connect()
+      
+      // Add database save functionality to textareas
+      allTextareas.forEach(textarea => {
+        textarea.addEventListener('change', (event) => {
+          saveScoreToDatabase(event, dbService)
+        })
+      })
+    } catch (error) {
+      console.warn('Failed to initialize database features:', error)
+    }
+  })
+}
 
-      for (const textarea of allTextareas) {
-        textarea.addEventListener('change', saveScoreToDatabase);
-      }
-
-      await dbService.connect();
-
-      function saveScoreToDatabase(event) {
-        const gameId = event.currentTarget.id;
-        const rawScore = event.currentTarget.value;
-        const date = new Date().toISOString().split('T')[0];
-        dbService.saveScore(gameId, date, rawScore);
-      }
-    });
+/**
+ * Save score to database
+ * @param {Event} event - The change event from textarea
+ * @param {Object} dbService - The database service instance
+ */
+function saveScoreToDatabase(event, dbService) {
+  const gameId = event.currentTarget.id
+  const rawScore = event.currentTarget.value
+  const date = new Date().toISOString().split('T')[0]
+  
+  try {
+    dbService.saveScore(gameId, date, rawScore)
+  } catch (error) {
+    console.warn('Failed to save score to database:', error)
   }
-});
+}
+
+// ============================================================================
+// APPLICATION STARTUP
+// ============================================================================
+
+/**
+ * Initialize the entire application
+ */
+function initializeApplication() {
+  // Initialize all core functionality
+  initializeTextareas()
+  initializeForm()
+  initializeShareButton()
+  initializePasteButtons()
+  initializeGameLinks()
+  initializeWindowEvents()
+}
+
+// Wait for DOM to be ready before initializing
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeApplication()
+    initializeCookieConsent()
+  })
+} else {
+  // DOM is already ready
+  initializeApplication()
+  initializeCookieConsent()
+}
 
 
