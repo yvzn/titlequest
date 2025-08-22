@@ -11,19 +11,7 @@ import './style.css'
 // Import utility modules
 import { updateScoreDisplay, updateResultsDisplay } from './score-manager.js'
 import { setupPasteButton, pasteToTextarea, writeToClipboard, isClipboardReadAvailable } from './clipboard-utils.js'
-import { 
-  getAllTextareas, 
-  getScoreDisplay, 
-  getResultsElement, 
-  getAllPasteButtons,
-  getAllGameLinks,
-  getShareButton,
-  getFormElement,
-  focusAndSelectTextarea,
-  showTemporaryButtonFeedback,
-  isIndexedDBAvailable,
-  getCookieConsentElements
-} from './dom-utils.js'
+import * as DOM from './dom-utils.js'
 
 // ============================================================================
 // GLOBAL STATE
@@ -35,10 +23,10 @@ let focusedTextareaId = undefined
 // DOM ELEMENT REFERENCES
 // ============================================================================
 
-const allTextareas = getAllTextareas()
-const resultsElement = getResultsElement()
-const shareButton = getShareButton()
-const formElement = getFormElement()
+const allTextareas = DOM.getAllTextareas()
+const resultsElement = DOM.getResultsElement()
+const shareButton = DOM.getShareButton()
+const formElement = DOM.getFormElement()
 
 // ============================================================================
 // EVENT HANDLERS
@@ -50,7 +38,7 @@ const formElement = getFormElement()
  */
 function handleTextareaChange(event) {
   const textarea = event.currentTarget
-  const scoreDisplay = getScoreDisplay(textarea.id)
+  const scoreDisplay = DOM.getScoreDisplay(textarea.id)
   
   // Update individual score display
   updateScoreDisplay(textarea, scoreDisplay)
@@ -65,7 +53,7 @@ function handleTextareaChange(event) {
  */
 function handleTextareaFocus(event) {
   const textarea = event.currentTarget
-  focusAndSelectTextarea(textarea)
+  DOM.focusAndSelectTextarea(textarea)
   focusedTextareaId = textarea.id
 }
 
@@ -79,10 +67,10 @@ async function handleShareButtonClick(event) {
   
   try {
     await writeToClipboard(textToShare)
-    showTemporaryButtonFeedback(button, 'Copied !', 1000)
+    DOM.showTemporaryButtonFeedback(button, 'Copied !', 1000)
   } catch (error) {
     console.warn('Failed to copy to clipboard:', error)
-    showTemporaryButtonFeedback(button, 'Failed to copy', 1000)
+    DOM.showTemporaryButtonFeedback(button, 'Failed to copy', 1000)
   }
 }
 
@@ -156,7 +144,7 @@ function initializeShareButton() {
  * Initialize paste buttons functionality
  */
 function initializePasteButtons() {
-  const pasteButtons = getAllPasteButtons()
+  const pasteButtons = DOM.getAllPasteButtons()
   pasteButtons.forEach(setupPasteButton)
 }
 
@@ -164,7 +152,7 @@ function initializePasteButtons() {
  * Initialize game links functionality
  */
 function initializeGameLinks() {
-  const gameLinks = getAllGameLinks()
+  const gameLinks = DOM.getAllGameLinks()
   gameLinks.forEach(gameLink => {
     gameLink.addEventListener('click', handleGameLinkClick)
   })
@@ -185,11 +173,11 @@ function initializeWindowEvents() {
  * Initialize cookie consent functionality and database features
  */
 function initializeCookieConsent() {
-  if (!isIndexedDBAvailable()) {
+  if (!DOM.isIndexedDBAvailable()) {
     return
   }
 
-  const { linkCookieConsent, linkStats } = getCookieConsentElements()
+  const { linkCookieConsent, linkStats } = DOM.getCookieConsentElements()
   const cookieConsent = Cookies.get('cookie-consent')
   
   // Show/hide appropriate links based on consent
