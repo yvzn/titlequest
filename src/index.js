@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie'
-import { dbService } from './db-service'
 
 import './style.css'
 
@@ -136,19 +135,24 @@ addEventListener('DOMContentLoaded', function () {
   }
 
   if (cookieConsent === 'true') {
-    addEventListener('load', function () {
-      dbService.connect();
+    addEventListener('load', async function () {
+      const module = await import('./db-service');
+      const dbService = module.dbService;
 
       for (const textarea of allTextareas) {
         textarea.addEventListener('change', saveScoreToDatabase);
+      }
+
+      await dbService.connect();
+
+      function saveScoreToDatabase(event) {
+        const gameId = event.currentTarget.id;
+        const rawScore = event.currentTarget.value;
+        const date = new Date().toISOString().split('T')[0];
+        dbService.saveScore(gameId, date, rawScore);
       }
     });
   }
 });
 
-function saveScoreToDatabase(event) {
-  const gameId = event.currentTarget.id;
-  const rawScore = event.currentTarget.value;
-  const date = new Date().toISOString().split('T')[0];
-  dbService.saveScore(gameId, date, rawScore);
-}
+
