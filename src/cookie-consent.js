@@ -1,15 +1,16 @@
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+import { dbService } from './db-service';
 
-import './style.css'
-import './cookie-consent.css'
+import './cookie-consent.css';
 
-const linkEnableCookies = document.getElementById("link-enable-cookies")
-const linkRejectCookies = document.getElementById("link-reject-cookies")
+const linkEnableCookies = document.getElementById("link-enable-cookies");
+const linkRejectCookies = document.getElementById("link-reject-cookies");
 
 linkEnableCookies.addEventListener('click', function (event) {
-    Cookies.set('cookie-consent', 'true')
-})
+    Cookies.set('cookie-consent', 'true');
+});
 
 linkRejectCookies.addEventListener('click', function (event) {
-    Cookies.remove('cookie-consent')
-})
+    Cookies.remove('cookie-consent');
+    dbService.drop();
+});

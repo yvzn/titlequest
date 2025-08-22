@@ -1,16 +1,18 @@
 import Cookies from 'js-cookie'
+import { dbService } from './db-service'
+
 import './style.css'
 
 const allTextareas = [...document.querySelectorAll("textarea")]
 
 for (const textarea of allTextareas) {
-  textarea.addEventListener('change', handleChange)
-  textarea.addEventListener('focus', handleFocus)
+  textarea.addEventListener('change', updateScoreDisplay);
+  textarea.addEventListener('focus', focusAndSelectTextarea);
 }
 
 const results = document.querySelector("pre")
 
-function handleChange(event) {
+function updateScoreDisplay(event) {
   const textareaId = event.currentTarget.id
   const scoreTag = document.getElementById(`score-${textareaId}`)
   let score = formatScore(textareaId, event.currentTarget.value)
@@ -40,7 +42,7 @@ function formatScore(gameId, text) {
 
 let focusedTextareaId = undefined
 
-function handleFocus(event) {
+function focusAndSelectTextarea(event) {
   event.currentTarget.select()
   focusedTextareaId = event.currentTarget.id
 }
@@ -62,10 +64,10 @@ shareButton.addEventListener("click", function (event) {
 for (const pasteButton of document.querySelectorAll('.paste-button')) {
   if (!navigator.clipboard.readText) continue
   pasteButton.hidden = false
-  pasteButton.addEventListener('click', handleClick)
+  pasteButton.addEventListener('click', pasteManuallyFromClipboard)
 }
 
-async function handleClick(event) {
+async function pasteManuallyFromClipboard(event) {
   const pasteButton = event.currentTarget
 
   const textarea = document.getElementById(pasteButton.dataset['for'])
@@ -117,14 +119,36 @@ addEventListener('focus', async function (event) {
   focusedTextareaId = undefined
 })
 
-const linkCookieConsent = document.getElementById("link-cookie-consent")
-const linkStats = document.getElementById("link-stats")
+addEventListener('DOMContentLoaded', function () {
+  const isIndexedDBAvailable = 'indexedDB' in window;
+  if (!isIndexedDBAvailable) return;
 
-const cookieConsent = Cookies.get('cookie-consent')
-if (cookieConsent === 'true') {
-  linkCookieConsent.hidden = true
-  linkStats.hidden = false
-} else {
-  linkCookieConsent.hidden = false
-  linkStats.hidden = true
+  const linkCookieConsent = document.getElementById("link-cookie-consent")
+  const linkStats = document.getElementById("link-stats")
+
+  const cookieConsent = Cookies.get('cookie-consent')
+  if (cookieConsent === 'true') {
+    linkCookieConsent.hidden = true
+    linkStats.hidden = false
+  } else {
+    linkCookieConsent.hidden = false
+    linkStats.hidden = true
+  }
+
+  if (cookieConsent === 'true') {
+    addEventListener('load', function () {
+      dbService.connect();
+
+      for (const textarea of allTextareas) {
+        textarea.addEventListener('change', saveScoreToDatabase);
+      }
+    });
+  }
+});
+
+function saveScoreToDatabase(event) {
+  const gameId = event.currentTarget.id;
+  const rawScore = event.currentTarget.value;
+  const date = new Date().toISOString().split('T')[0];
+  dbService.saveScore(gameId, date, rawScore);
 }

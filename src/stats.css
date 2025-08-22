@@ -1,16 +1,7 @@
 @import url('./style.css');
 
-h3 {
-    padding: 0;
-    font-size: large;
-}
-
 p {
     color: var(--color-txt-muted);
-}
-
-p+h3 {
-    margin-top: var(--space-1x);
 }
 
 footer {
@@ -40,8 +31,4 @@ footer a:active i {
 
 footer a span {
     text-decoration: underline;
-}
-
-footer a#link-reject-cookies {
-    color: var(--color-txt-muted);
 }

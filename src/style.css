@@ -2,6 +2,7 @@
 :root {
   --color-bg-light: #f9f9f9;
   --color-txt-light: #0f172a;
+  --color-txt-muted-light: #283658;
   --color-link-light: #3D74B8;
   --color-title-light: #B91C1C;
   --color-title-txt-light: #f9f9f9;
@@ -12,6 +13,7 @@
   --color-button-txt-light: #0f172a;
   --color-bg-dark: #0f172a;
   --color-txt-dark: hsl(0, 0%, 77%);
+  --color-txt-muted-dark: hsl(0, 0%, 51%);
   --color-link-dark: hsl(213, 69%, 58%);
   --color-title-dark: #B91C1C;
   --color-title-txt-dark: #f9f9f9;
@@ -22,6 +24,7 @@
   --color-button-txt-dark: #f9f9f9;
   --color-bg: var(--color-bg-light);
   --color-txt: var(--color-txt-light);
+  --color-txt-muted: var(--color-txt-muted-light);
   --color-link: var(--color-link-light);
   --color-title: var(--color-title-light);
   --color-title-txt: var(--color-title-txt-light);
@@ -39,6 +42,7 @@
   :root {
     --color-bg: var(--color-bg-dark);
     --color-txt: var(--color-txt-dark);
+    --color-txt-muted: var(--color-txt-muted-dark);
     --color-link: var(--color-link-dark);
     --color-title: var(--color-title-dark);
     --color-title-txt: var(--color-title-txt-dark);
@@ -221,4 +225,11 @@ nav a {
   cursor: pointer;
   padding: .5em 1em;
   text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  nav a {
+  border-color: var(--color-title-txt);
+    color: var(--color-title-txt);
+  }
 }
