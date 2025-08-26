@@ -33,10 +33,10 @@ const formElement = DOM.getFormElement()
 // ============================================================================
 
 /**
- * Handle textarea change events to update score displays
+ * Update score displays when textarea content changes
  * @param {Event} event - The change event
  */
-function handleTextareaChange(event) {
+function updateScores(event) {
   const textarea = event.currentTarget
   const scoreDisplay = DOM.getScoreDisplay(textarea.id)
   
@@ -48,20 +48,20 @@ function handleTextareaChange(event) {
 }
 
 /**
- * Handle textarea focus events
+ * Focus and select textarea content
  * @param {Event} event - The focus event
  */
-function handleTextareaFocus(event) {
+function focusTextarea(event) {
   const textarea = event.currentTarget
   DOM.focusAndSelectTextarea(textarea)
   focusedTextareaId = textarea.id
 }
 
 /**
- * Handle share button clicks
+ * Share results to clipboard
  * @param {Event} event - The click event
  */
-async function handleShareButtonClick(event) {
+async function shareResults(event) {
   const button = event.currentTarget
   const textToShare = resultsElement.innerText.trim()
   
@@ -75,10 +75,10 @@ async function handleShareButtonClick(event) {
 }
 
 /**
- * Handle game link clicks to focus corresponding textarea
+ * Focus the corresponding game textarea
  * @param {Event} event - The click event
  */
-function handleGameLinkClick(event) {
+function focusGameTextarea(event) {
   const gameLink = event.currentTarget
   const targetTextareaId = gameLink.dataset['for']
   const textarea = document.getElementById(targetTextareaId)
@@ -91,19 +91,29 @@ function handleGameLinkClick(event) {
 }
 
 /**
- * Handle window focus events for automatic clipboard pasting
+ * Automatically paste from clipboard when window gains focus
  */
-async function handleWindowFocus() {
+async function autoPasteFromClipboard() {
+  console.debug('Focused textarea:', focusedTextareaId)
   if (!isClipboardReadAvailable() || !focusedTextareaId) {
     return
   }
 
   const textarea = document.getElementById(focusedTextareaId)
   if (textarea) {
-    await pasteToTextarea(textarea)
+    const success = await pasteToTextarea(textarea)
+    if (success) {
+      focusedTextareaId = undefined
+      console.debug('Focused textarea:', focusedTextareaId)
+      return
+    }
   }
+}
 
-  focusedTextareaId = undefined
+async function checkForAutoPaste() {
+  if (document.visibilityState === 'visible') {
+    await autoPasteFromClipboard()
+  }
 }
 
 // ============================================================================
@@ -115,8 +125,8 @@ async function handleWindowFocus() {
  */
 function initializeTextareas() {
   allTextareas.forEach(textarea => {
-    textarea.addEventListener('change', handleTextareaChange)
-    textarea.addEventListener('focus', handleTextareaFocus)
+    textarea.addEventListener('change', updateScores)
+    textarea.addEventListener('focus', focusTextarea)
   })
 }
 
@@ -136,7 +146,7 @@ function initializeForm() {
  */
 function initializeShareButton() {
   if (shareButton) {
-    shareButton.addEventListener("click", handleShareButtonClick)
+    shareButton.addEventListener("click", shareResults)
   }
 }
 
@@ -154,7 +164,7 @@ function initializePasteButtons() {
 function initializeGameLinks() {
   const gameLinks = DOM.getAllGameLinks()
   gameLinks.forEach(gameLink => {
-    gameLink.addEventListener('click', handleGameLinkClick)
+    gameLink.addEventListener('click', focusGameTextarea)
   })
 }
 
@@ -162,7 +172,8 @@ function initializeGameLinks() {
  * Initialize window-level event listeners
  */
 function initializeWindowEvents() {
-  window.addEventListener('focus', handleWindowFocus)
+  window.addEventListener('focus', autoPasteFromClipboard)
+  document.addEventListener("visibilitychange", checkForAutoPaste)
 }
 
 // ============================================================================
