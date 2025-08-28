@@ -39,10 +39,10 @@ const formElement = DOM.getFormElement()
 function updateScores(event) {
   const textarea = event.currentTarget
   const scoreDisplay = DOM.getScoreDisplay(textarea.id)
-  
+
   // Update individual score display
   updateScoreDisplay(textarea, scoreDisplay)
-  
+
   // Update aggregated results display
   updateResultsDisplay(allTextareas, resultsElement)
 }
@@ -64,13 +64,13 @@ function focusTextarea(event) {
 async function shareResults(event) {
   const button = event.currentTarget
   const textToShare = resultsElement.innerText.trim()
-  
+
   try {
     await writeToClipboard(textToShare)
     DOM.showTemporaryButtonFeedback(button, 'Copied !', 1000)
   } catch (error) {
     console.warn('Failed to copy to clipboard:', error)
-    DOM.showTemporaryButtonFeedback(button, 'Failed to copy', 1000)
+    DOM.showTemporaryButtonFeedback(button, 'Failed !', 1000)
   }
 }
 
@@ -82,7 +82,7 @@ function focusGameTextarea(event) {
   const gameLink = event.currentTarget
   const targetTextareaId = gameLink.dataset['for']
   const textarea = document.getElementById(targetTextareaId)
-  
+
   if (textarea) {
     textarea.focus()
     const focusEvent = new Event('focus', { bubbles: true })
@@ -94,7 +94,6 @@ function focusGameTextarea(event) {
  * Automatically paste from clipboard when window gains focus
  */
 async function autoPasteFromClipboard() {
-  console.debug('Focused textarea:', focusedTextareaId)
   if (!isClipboardReadAvailable() || !focusedTextareaId) {
     return
   }
@@ -104,12 +103,14 @@ async function autoPasteFromClipboard() {
     const success = await pasteToTextarea(textarea)
     if (success) {
       focusedTextareaId = undefined
-      console.debug('Focused textarea:', focusedTextareaId)
       return
     }
   }
 }
 
+/**
+ * Automatically paste from clipboard when document becomes visible
+ */
 async function checkForAutoPaste() {
   if (document.visibilityState === 'visible') {
     await autoPasteFromClipboard()
@@ -190,12 +191,12 @@ function initializeCookieConsent() {
 
   const { linkCookieConsent, linkStats } = DOM.getCookieConsentElements()
   const cookieConsent = Cookies.get('cookie-consent')
-  
+
   // Show/hide appropriate links based on consent
   if (cookieConsent === 'true') {
     linkCookieConsent.hidden = true
     linkStats.hidden = false
-    
+
     // Initialize database functionality if consent is given
     initializeDatabaseFeatures()
   } else {
@@ -209,23 +210,19 @@ function initializeCookieConsent() {
  */
 function initializeDatabaseFeatures() {
   window.addEventListener('load', async () => {
-    try {
-      // Dynamically import database service
-      const module = await import('./db-service')
-      const dbService = module.dbService
-      
-      // Connect to database
-      await dbService.connect()
-      
-      // Add database save functionality to textareas
-      allTextareas.forEach(textarea => {
-        textarea.addEventListener('change', (event) => {
-          saveScoreToDatabase(event, dbService)
-        })
+    // Dynamically import database service
+    const module = await import('./db-service')
+    const dbService = module.dbService
+
+    // Connect to database
+    await dbService.connect()
+
+    // Add database save functionality to textareas
+    allTextareas.forEach(textarea => {
+      textarea.addEventListener('change', (event) => {
+        saveScoreToDatabase(event, dbService)
       })
-    } catch (error) {
-      console.warn('Failed to initialize database features:', error)
-    }
+    })
   })
 }
 
@@ -238,12 +235,8 @@ function saveScoreToDatabase(event, dbService) {
   const gameId = event.currentTarget.id
   const rawScore = event.currentTarget.value
   const date = new Date().toISOString().split('T')[0]
-  
-  try {
-    dbService.saveScore(gameId, date, rawScore)
-  } catch (error) {
-    console.warn('Failed to save score to database:', error)
-  }
+
+  dbService.saveScoreRaw(gameId, date, rawScore)
 }
 
 // ============================================================================

@@ -1,7 +1,11 @@
 @import url('./style.css');
 
-p {
-    color: var(--color-txt-muted);
+#stats-processing {
+    width: 100%;
+}
+
+progress {
+    accent-color: var(--color-txt-muted);
 }
 
 footer {

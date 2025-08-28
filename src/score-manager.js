@@ -34,10 +34,7 @@ export function formatScore(gameId, rawText) {
  */
 export function updateScoreDisplay(textarea, scoreDisplay) {
   const formattedScore = formatScore(textarea.id, textarea.value);
-  
-  // Extract just the score part (after the first space)
-  const scoreText = formattedScore.substring(formattedScore.indexOf(' ') + 1);
-  scoreDisplay.innerText = scoreText;
+  scoreDisplay.innerText = formattedScore;
 }
 
 /**
