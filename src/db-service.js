@@ -35,6 +35,14 @@ class DbService {
         await this.#database.raw.put(scoreEntry);
     }
 
+    async getScoresForGame(game) {
+        const gameScoresByRound = await this.#database.raw.where('game').equals(game).toArray();
+        return gameScoresByRound.reduce((acc, curr) => {
+            const round = String(curr.intScore);
+            acc[round] = (acc[round] || 0) + 1;
+            return acc;
+        }, {});
+    }
 
     async drop() {
         await this.#database.delete();

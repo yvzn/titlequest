@@ -1,10 +1,14 @@
 import { dbService } from './db-service.js'
+import { GAMES } from './game-config.js';
 import { formatScore } from './score-manager.js';
 
 import './stats.css'
 
-async function initializeStats() {
-    await dbService.connect();
+function initializeDatabaseFeatures() {
+    return dbService.connect();
+}
+
+async function processIncompleteScores() {
     const unprocessed = await dbService.getIncompleteScores();
     if (unprocessed.length === 0) {
         return;
@@ -67,12 +71,55 @@ function parseScoreAsInteger(scoreText) {
     return numberOfSquaresBeforeGreen + 1;
 }
 
+function displayScores() {
+    return Promise.all(GAMES.keys().map(displayScoresForGame));
+}
+
+async function displayScoresForGame(gameId) {
+    const scoresByRound = await dbService.getScoresForGame(gameId);
+    if (Object.keys(scoresByRound).length === 0) {
+        console.log(`No scores found for game: ${gameId}`);
+        return;
+    }
+
+    const scoresByRoundOrGameOver = Object.entries(scoresByRound)
+        .reduce((acc, [round, count]) => {
+            if (round >= 1000) {
+                acc['gameOver'] = (acc['gameOver'] || 0) + count;
+            } else {
+                acc[round] = count;
+            }
+            return acc;
+        }, {});
+
+    const maxScore = Math.max(...Object.values(scoresByRoundOrGameOver));
+
+    const fieldset = document.getElementById(gameId);
+    fieldset.style.display = 'block';
+
+    const listItems = [...fieldset.querySelectorAll('li')];
+    for (const listItem of listItems) {
+        const round = listItem.getAttribute('data-round');
+        const span = listItem.querySelector('span');
+        const count = scoresByRoundOrGameOver[round] || 0;
+
+        if (count > 0) {
+            listItem.style.width = `${(count / maxScore) * 100}%`;
+            span.innerText = String(count);
+        }
+    }
+}
+
 // Initialize stats processing when DOM is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeStats();
+    document.addEventListener('DOMContentLoaded', async () => {
+        await initializeDatabaseFeatures();
+        await processIncompleteScores();
+        await displayScores();
     });
 } else {
     // DOM is already ready
-    initializeStats();
+    await initializeDatabaseFeatures();
+    await processIncompleteScores();
+    await displayScores();
 }

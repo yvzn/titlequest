@@ -6,6 +6,21 @@
  */
 
 /**
+ * All game identifiers used in the application
+ */
+export const GAMES = new Map([
+  ['framed', 'Framed'],
+  ['oneframe', 'Framed 1-Frame'],
+  ['guessthegame', 'GuessThe.game'],
+  ['guesstheaudio', 'Guess The Audio'],
+  ['gaps', 'Gaps'],
+  ['episode', 'Episode'],
+  ['faces', 'Faces'],
+  ['guessthebook', 'Guess The Book'],
+  ['bandle', 'Bandle']
+]);
+
+/**
  * Score formatters for each game type
  * Each formatter takes a string and returns a formatted version
  */

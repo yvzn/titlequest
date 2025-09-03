@@ -4,8 +4,46 @@
     width: 100%;
 }
 
+form {
+    grid-template-columns: auto auto;
+}
+
 progress {
     accent-color: var(--color-txt-muted);
+}
+
+section:first-of-type fieldset {
+    width: 18rem;
+}
+
+fieldset {
+    display: none;
+    align-content: start;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: .5em;
+  list-style-type: none;
+}
+
+.chart li {
+  border-bottom: solid 3px var(--color-stats-1);
+  border-image-slice: 1;
+  border-image-source: linear-gradient(to right, var(--color-stats-1), var(--color-stats-2));
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chart li span {
+  font-weight: bold;
+  font-size: smaller;
+  position: relative;
 }
 
 footer {
