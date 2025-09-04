@@ -71,15 +71,27 @@ function parseScoreAsInteger(scoreText) {
     return numberOfSquaresBeforeGreen + 1;
 }
 
-function displayScores() {
-    return Promise.all(GAMES.keys().map(displayScoresForGame));
+async function displayScores() {
+    /** @type {Promise<boolean>[]} */
+    const results = await Promise.all(GAMES.keys().map(displayScoresForGame));
+    const success = results.some(result => result);
+
+    const statsNoData = document.getElementById('stats-no-data');
+    if (!success) {
+        statsNoData.hidden = false;
+    }
 }
 
+/**
+ * Display scores for a specific game
+ * @param {*} gameId - The game identifier
+ * @returns {Promise<boolean>} True if scores were displayed, false otherwise
+ */
 async function displayScoresForGame(gameId) {
     const scoresByRound = await dbService.getScoresForGame(gameId);
     if (Object.keys(scoresByRound).length === 0) {
         console.log(`No scores found for game: ${gameId}`);
-        return;
+        return false;
     }
 
     const scoresByRoundOrGameOver = Object.entries(scoresByRound)
@@ -108,6 +120,8 @@ async function displayScoresForGame(gameId) {
             span.innerText = String(count);
         }
     }
+
+    return true;
 }
 
 // Initialize stats processing when DOM is ready
@@ -119,7 +133,7 @@ if (document.readyState === 'loading') {
     });
 } else {
     // DOM is already ready
-    await initializeDatabaseFeatures();
-    await processIncompleteScores();
-    await displayScores();
+    initializeDatabaseFeatures()
+        .then(processIncompleteScores)
+        .then(displayScores);
 }
