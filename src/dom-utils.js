@@ -54,6 +54,14 @@ export function getShareButton() {
 }
 
 /**
+ * Get the "total score" section element
+ * @returns {HTMLElement|null} The total score section element
+ */
+export function getTotalScoreSection() {
+  return document.getElementById("total-score");
+}
+
+/**
  * Get the form element
  * @returns {HTMLFormElement|null} The form element
  */
@@ -79,7 +87,7 @@ export function focusAndSelectTextarea(textarea) {
 export function showTemporaryButtonFeedback(button, temporaryText, duration = 1000) {
   const originalContent = button.innerHTML;
   button.innerHTML = temporaryText;
-  
+
   setTimeout(() => {
     button.innerHTML = originalContent;
   }, duration);

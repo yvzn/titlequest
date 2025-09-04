@@ -23,10 +23,11 @@ let focusedTextareaId = undefined
 // DOM ELEMENT REFERENCES
 // ============================================================================
 
-const allTextareas = DOM.getAllTextareas()
-const resultsElement = DOM.getResultsElement()
-const shareButton = DOM.getShareButton()
-const formElement = DOM.getFormElement()
+const allTextareas = DOM.getAllTextareas();
+const resultsElement = DOM.getResultsElement();
+const shareButton = DOM.getShareButton();
+const totalScoreElement = DOM.getTotalScoreSection();
+const formElement = DOM.getFormElement();
 
 // ============================================================================
 // EVENT HANDLERS
@@ -146,8 +147,11 @@ function initializeForm() {
  * Initialize share button functionality
  */
 function initializeShareButton() {
+  if (totalScoreElement) {
+    totalScoreElement.hidden = false;
+  }
   if (shareButton) {
-    shareButton.addEventListener("click", shareResults)
+    shareButton.addEventListener("click", shareResults);
   }
 }
 
