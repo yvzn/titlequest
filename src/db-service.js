@@ -35,13 +35,26 @@ class DbService {
         await this.#database.raw.put(scoreEntry);
     }
 
+    /**
+     * Get aggregated scores by round (intScore) for a specific game
+     * @param {string} game game identifier
+     * @returns {Promise<Record<string, number>>} A record mapping round numbers to counts
+     */
     async getScoresForGame(game) {
-        const gameScoresByRound = await this.#database.raw.where('game').equals(game).toArray();
-        return gameScoresByRound.reduce((acc, curr) => {
-            const round = String(curr.intScore);
+        const gameScores = await this.#database.raw.where('game').equals(game).toArray();
+        const scoresByDate = gameScores.reduce((acc, curr) => {
+            const date = curr.date;
+            if (!acc[date] || curr.intScore < acc[date]) {
+                acc[date] = curr.intScore;
+            }
+            return acc;
+        }, {});
+        const gameScoresByRound = Object.values(scoresByDate).reduce((acc, curr) => {
+            const round = String(curr);
             acc[round] = (acc[round] || 0) + 1;
             return acc;
         }, {});
+        return gameScoresByRound;
     }
 
     async drop() {
