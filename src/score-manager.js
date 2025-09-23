@@ -51,6 +51,15 @@ export function aggregateScores(textareas) {
 }
 
 /**
+ * Check if any games have been played (any textarea has content)
+ * @param {HTMLTextAreaElement[]} textareas - Array of textarea elements
+ * @returns {boolean} True if any game has been played
+ */
+export function hasAnyGameBeenPlayed(textareas) {
+  return textareas.some(textarea => textarea.value.trim() !== '');
+}
+
+/**
  * Update the main results display with aggregated scores
  * @param {HTMLTextAreaElement[]} textareas - Array of all textarea elements
  * @param {HTMLElement} resultsElement - The element to display results in

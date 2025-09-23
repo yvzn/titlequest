@@ -5,13 +5,12 @@
  * This module orchestrates the main application functionality using specialized modules.
  */
 
-import Cookies from 'js-cookie'
-import './style.css'
+import Cookies from 'js-cookie';
+import './style.css';
 
-// Import utility modules
-import { updateScoreDisplay, updateResultsDisplay } from './score-manager.js'
-import { setupPasteButton, pasteToTextarea, writeToClipboard, isClipboardReadAvailable } from './clipboard-utils.js'
-import * as DOM from './dom-utils.js'
+import { updateScoreDisplay, updateResultsDisplay, hasAnyGameBeenPlayed } from './score-manager.js';
+import { setupPasteButton, pasteToTextarea, writeToClipboard, isClipboardReadAvailable } from './clipboard-utils.js';
+import * as DOM from './dom-utils.js';
 
 // ============================================================================
 // GLOBAL STATE
@@ -27,6 +26,7 @@ const allTextareas = DOM.getAllTextareas();
 const resultsElement = DOM.getResultsElement();
 const shareButton = DOM.getShareButton();
 const totalScoreElement = DOM.getTotalScoreSection();
+const instructionsElement = document.getElementById('instructions');
 const formElement = DOM.getFormElement();
 
 // ============================================================================
@@ -38,14 +38,15 @@ const formElement = DOM.getFormElement();
  * @param {Event} event - The change event
  */
 function updateScores(event) {
-  const textarea = event.currentTarget
-  const scoreDisplay = DOM.getScoreDisplay(textarea.id)
+  const textarea = event.currentTarget;
+  const scoreDisplay = DOM.getScoreDisplay(textarea.id);
 
   // Update individual score display
-  updateScoreDisplay(textarea, scoreDisplay)
+  updateScoreDisplay(textarea, scoreDisplay);
 
   // Update aggregated results display
-  updateResultsDisplay(allTextareas, resultsElement)
+  updateResultsDisplay(allTextareas, resultsElement);
+  showOrHideTotalScore();
 }
 
 /**
@@ -147,13 +148,28 @@ function initializeForm() {
  * Initialize share button functionality
  */
 function initializeShareButton() {
-  if (totalScoreElement) {
-    totalScoreElement.hidden = false;
-  }
   if (shareButton) {
     shareButton.addEventListener("click", shareResults);
   }
 }
+
+/**
+ * Update visibility of instructions and total-score sections
+ */
+export function showOrHideTotalScore() {
+  const hasPlayedAnyGame = hasAnyGameBeenPlayed(allTextareas);
+
+  if (instructionsElement && totalScoreElement) {
+    if (hasPlayedAnyGame) {
+      instructionsElement.hidden = true;
+      totalScoreElement.hidden = false;
+    } else {
+      instructionsElement.hidden = false;
+      totalScoreElement.hidden = true;
+    }
+  }
+}
+
 
 /**
  * Initialize paste buttons functionality
@@ -251,13 +267,13 @@ function saveScoreToDatabase(event, dbService) {
  * Initialize the entire application
  */
 function initializeApplication() {
-  // Initialize all core functionality
-  initializeTextareas()
-  initializeForm()
-  initializeShareButton()
-  initializePasteButtons()
-  initializeGameLinks()
-  initializeWindowEvents()
+  initializeTextareas();
+  initializeForm();
+  initializeShareButton();
+  showOrHideTotalScore();
+  initializePasteButtons();
+  initializeGameLinks();
+  initializeWindowEvents();
 }
 
 // Wait for DOM to be ready before initializing
