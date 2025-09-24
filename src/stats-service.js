@@ -82,7 +82,7 @@ export class StatsService {
      * @returns {Promise<{displayed: number, total: number}>} Display results
      */
     async displayAllScores() {
-        const gameIds = Object.keys(GAMES);
+        const gameIds = GAMES.keys();
         const results = await Promise.all(
             gameIds.map(gameId => this.displayScoresForGame(gameId))
         );
