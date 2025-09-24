@@ -136,6 +136,18 @@ https://github.com/yvzn/titlequest/
     </form>
 
     <script type="module" src="/src/index.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+
+            // Cleanup old cache on page load
+            if (navigator.serviceWorker.controller) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.controller.postMessage('cleanUp');
+                });
+            }
+        }        
+    </script>
 </body>
 
 </html>
