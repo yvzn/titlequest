@@ -15,7 +15,9 @@ footer {
 
 footer a {
     margin-right: var(--space-1x);
+    margin-bottom: var(--space-2x);
     text-decoration: none;
+    display: inline-block;
 }
 
 footer a i {
