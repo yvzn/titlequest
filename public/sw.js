@@ -20,7 +20,7 @@ let cacheIDs = [coreID, pageID, imgID, apiID];
 
 // Max number of files in cache
 let limits = {
-    pages: 35,
+    pages: 10,
     imgs: 20
 };
 

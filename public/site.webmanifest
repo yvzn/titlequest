@@ -1,6 +1,7 @@
 {
     "name": "Title Quest",
     "short_name": "Title Quest",
+    "start_url": "https://titlequest.app",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
