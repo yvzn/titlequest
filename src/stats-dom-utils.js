@@ -125,6 +125,12 @@ export const StatsDisplay = {
       this.updateScoreBar(listItem, scoreData, maxScore);
     });
 
+    const numberOfGames = Object.values(scoreData).reduce((sum, count) => sum + count, 0);
+    const heading = fieldset.querySelector('h3');
+    if (heading) {
+      heading.insertAdjacentText('beforeend', `: ${numberOfGames} game${numberOfGames !== 1 ? 's' : ''} `);
+    }
+
     return true;
   },
 
