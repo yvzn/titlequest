@@ -195,6 +195,12 @@ section:first-of-type {
   gap: 0 var(--space-1x);
 }
 
+@media screen and (max-width: 40em) {
+  section:first-of-type {
+    gap: 0;
+  }
+}
+
 section:first-of-type h2 {
   flex-basis: 100%;
 }
@@ -205,7 +211,7 @@ section:first-of-type fieldset {
 
 @media screen and (max-width: 63em) {
   section:first-of-type fieldset {
-    width: 90%;
+    width: 100%;
   }
 }
 

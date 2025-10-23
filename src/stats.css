@@ -16,6 +16,12 @@ section:first-of-type fieldset {
     width: 18rem;
 }
 
+@media screen and (max-width: 63em) {
+  section:first-of-type fieldset {
+    width: 100%;
+  }
+}
+
 fieldset {
     display: none;
     align-content: start;
