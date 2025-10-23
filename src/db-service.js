@@ -1,7 +1,6 @@
 import { Dexie } from 'dexie';
 
 const databaseName = 'titleQuestScore';
-const databaseVersion = 2;
 
 class DbService {
     /**
@@ -10,8 +9,12 @@ class DbService {
     #database = new Dexie(databaseName);
 
     async connect() {
-        this.#database.version(databaseVersion).stores({
-            raw: '++id, game, date, intScore' // do not index 'score'
+        this.#database.version(1).stores({
+            raw: '++id, game, date, processed'
+        });
+
+        this.#database.version(2).stores({
+            raw: '++id, game, date, intScore'
         }).upgrade(tx => {
             tx.table('raw').toCollection().modify(rawScore => {
                 if (rawScore.intScore === undefined) {
@@ -20,11 +23,21 @@ class DbService {
                 }
             });
         });
+
+        this.#database.version(3).stores({
+            raw: '++id, game, [game+date], intScore'
+        });
+
         await this.#database.open();
     }
 
     async saveScoreRaw(game, date, score) {
         await this.#database.raw.add({ game, date, score, intScore: -1 });
+    }
+
+    async getScoreRaw(game, date) {
+        const entry = await this.#database.raw.where({ game, date }).first();
+        return entry ? entry.score : null;
     }
 
     async getIncompleteScores() {

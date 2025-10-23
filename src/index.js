@@ -231,19 +231,41 @@ function initializeCookieConsent() {
 function initializeDatabaseFeatures() {
   window.addEventListener('load', async () => {
     // Dynamically import database service
-    const module = await import('./db-service')
-    const dbService = module.dbService
+    const module = await import('./db-service');
+    const dbService = module.dbService;
 
     // Connect to database
-    await dbService.connect()
+    await dbService.connect();
 
     // Add database save functionality to textareas
     allTextareas.forEach(textarea => {
       textarea.addEventListener('change', (event) => {
-        saveScoreToDatabase(event, dbService)
-      })
-    })
+        saveScoreToDatabase(event, dbService);
+      });
+    });
+
+    // Load existing scores from database
+    for (const textarea of allTextareas) {
+      await loadSavedScoreFromDatabase(textarea, dbService);
+    }
   })
+}
+
+/**
+ * Load saved score from database into textarea
+ * @param {HTMLTextAreaElement} textarea - The textarea element 
+ * @param {Object} dbService - The database service instance
+ */
+async function loadSavedScoreFromDatabase(textarea, dbService) {
+  const gameId = textarea.id;
+  const date = new Date().toISOString().split('T')[0];
+  const savedScore = await dbService.getScoreRaw(gameId, date);
+
+  if (savedScore !== null) {
+    textarea.value = savedScore;
+    const changeEvent = new Event('change', { bubbles: true });
+    textarea.dispatchEvent(changeEvent);
+  }
 }
 
 /**
@@ -279,13 +301,13 @@ function initializeApplication() {
 // Wait for DOM to be ready before initializing
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    initializeApplication()
-    initializeCookieConsent()
+    initializeApplication();
+    initializeCookieConsent();
   })
 } else {
   // DOM is already ready
-  initializeApplication()
-  initializeCookieConsent()
+  initializeApplication();
+  initializeCookieConsent();
 }
 
 
