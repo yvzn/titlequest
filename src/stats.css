@@ -86,6 +86,7 @@ footer a span {
 .activity-calendar {
   margin: var(--space-1x) 0 0 0;
   padding: .5em;
+  min-width: 20rem;
 }
 
 .calendar-header {
@@ -253,5 +254,6 @@ footer a span {
 
 hr {
   width: 100%;
+  margin-top: 0;
   visibility: hidden;
 }

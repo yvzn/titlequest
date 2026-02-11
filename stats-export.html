@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <title>Import / Export Stats - Title Quest</title>
+    <base target="_self">
+</head>
+
+<body>
+    <form>
+        <h1>
+            <a href="/" target="_top">Title Quest</a>
+        </h1>
+        <nav>
+            <a href="stats.html">Back to Stats</a>
+        </nav>
+
+        <section>
+            <h2>Import / Export Stats</h2>
+
+            <article>
+                <h3>Export</h3>
+                <button type="button" id="exportBtn"><i aria-hidden="true">💾</i> <span>Export to File</span></button>
+                <div id="exportStatus"></div>
+            </article>
+
+            <article>
+                <h3>Import</h3>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <button type="button" id="importBtn"><i aria-hidden="true">📂</i> <span>Select File to Import</span></button>
+                <div id="importMetadata"></div>
+                <button type="button" id="confirmImportBtn" style="display: none;"><i aria-hidden="true">✅</i> <span>Confirm Import</span></button>
+                <div id="importStatus"></div>
+            </article>
+        </section>
+    </form>
+
+    <script type="module" src="/src/stats-export.js"></script>
+</body>
+
+</html>

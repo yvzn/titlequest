@@ -78,6 +78,14 @@ class DbService {
         return await this.#database.raw.toArray();
     }
 
+    /**
+     * Get the underlying Dexie database instance
+     * @returns {Dexie} The database instance
+     */
+    getDatabase() {
+        return this.#database;
+    }
+
     async drop() {
         await this.#database.delete();
     }

@@ -13,6 +13,7 @@ export default defineConfig({
                 main: resolve(__dirname, 'index.html'),
                 cookieConsent: resolve(__dirname, 'cookie-consent.html'),
                 stats: resolve(__dirname, 'stats.html'),
+                statsExport: resolve(__dirname, 'stats-export.html'),
                 redirect: resolve(__dirname, 'redirect/index.html'),
             }
         }

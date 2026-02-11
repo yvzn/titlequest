@@ -1,0 +1,56 @@
+article {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--color-input-border);
+    border-radius: 8px;
+}
+
+article h3 {
+    margin-top: 0;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#exportStatus, #importStatus {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 20px;
+}
+
+/* Status message colors */
+.status-info {
+    color: blue;
+}
+
+.status-success {
+    color: green;
+}
+
+.status-error {
+    color: red;
+}
+
+.status-warning {
+    color: orange;
+}
+
+/* Import metadata display */
+.import-metadata-box {
+    background: #f0f0f0;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+/* Utility classes */
+.hidden {
+    display: none;
+}
+
+.visible-inline {
+    display: inline-block;
+}
