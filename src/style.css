@@ -13,6 +13,11 @@
   --color-button-txt-light: #0f172a;
   --color-stats-1-light: #ebebeb;
   --color-stats-2-light: #d6d6d6;
+  --color-calendar-empty-light: #ebebeb;
+  --color-calendar-low-light: #c8e6c9;
+  --color-calendar-medium-light: #81c784;
+  --color-calendar-high-light: #4caf50;
+  --color-calendar-veryhigh-light: #2e7d32;
   --color-bg-dark: #0f172a;
   --color-txt-dark: hsl(0, 0%, 77%);
   --color-txt-muted-dark: hsl(0, 0%, 51%);
@@ -26,6 +31,11 @@
   --color-button-txt-dark: #f9f9f9;
   --color-stats-1-dark: hsl(222, 49%, 41%);
   --color-stats-2-dark: hsl(213, 69%, 58%);
+  --color-calendar-empty-dark: hsl(222, 49%, 21%);
+  --color-calendar-low-dark: hsl(122, 20%, 35%);
+  --color-calendar-medium-dark: hsl(122, 30%, 45%);
+  --color-calendar-high-dark: hsl(122, 40%, 55%);
+  --color-calendar-veryhigh-dark: hsl(122, 50%, 65%);
   --color-bg: var(--color-bg-light);
   --color-txt: var(--color-txt-light);
   --color-txt-muted: var(--color-txt-muted-light);
@@ -39,6 +49,11 @@
   --color-button-txt: var(--color-button-txt-light);
   --color-stats-1: var(--color-stats-1-light);
   --color-stats-2: var(--color-stats-2-light);
+  --color-calendar-empty: var(--color-calendar-empty-light);
+  --color-calendar-low: var(--color-calendar-low-light);
+  --color-calendar-medium: var(--color-calendar-medium-light);
+  --color-calendar-high: var(--color-calendar-high-light);
+  --color-calendar-veryhigh: var(--color-calendar-veryhigh-light);
 
   --space-1x: 2rem;
   --space-2x: 4rem;
@@ -59,6 +74,11 @@
     --color-button-txt: var(--color-button-txt-dark);
     --color-stats-1: var(--color-stats-1-dark);
     --color-stats-2: var(--color-stats-2-dark);
+    --color-calendar-empty: var(--color-calendar-empty-dark);
+    --color-calendar-low: var(--color-calendar-low-dark);
+    --color-calendar-medium: var(--color-calendar-medium-dark);
+    --color-calendar-high: var(--color-calendar-high-dark);
+    --color-calendar-veryhigh: var(--color-calendar-veryhigh-dark);
   }
 }
 

@@ -70,6 +70,14 @@ class DbService {
         return gameScoresByRound;
     }
 
+    /**
+     * Get all scores from the database
+     * @returns {Promise<Array>} All score entries
+     */
+    async getAllScores() {
+        return await this.#database.raw.toArray();
+    }
+
     async drop() {
         await this.#database.delete();
     }

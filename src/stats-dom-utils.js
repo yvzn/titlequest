@@ -182,3 +182,132 @@ export const StatsDOMUtils = {
     }
   }
 };
+
+/**
+ * Activity Calendar DOM Management
+ */
+export const ActivityCalendar = {
+  /**
+   * Render the complete activity calendar
+   * @param {Object} calendarData - Calendar data from calendarService
+   */
+  render(calendarData) {
+    this.renderTable(calendarData);
+  },
+
+  /**
+   * Render the entire calendar table
+   * @param {Object} calendarData - Calendar data with days, months, and weekdays
+   */
+  renderTable(calendarData) {
+    const { days, months, weekdays } = calendarData;
+    const totalWeeks = Math.ceil(days.length / 7);
+    
+    // Render month headers
+    this.renderMonthHeaders(months, totalWeeks);
+    
+    // Render the 7 rows (one per weekday)
+    this.renderWeekRows(days, weekdays, totalWeeks);
+  },
+
+  /**
+   * Render month headers in thead
+   * @param {Array<{name: string, column: number}>} months - Month information
+   * @param {number} totalWeeks - Total number of weeks to display
+   */
+  renderMonthHeaders(months, totalWeeks) {
+    const headerRow = document.getElementById('calendar-months');
+    if (!headerRow) return;
+
+    headerRow.innerHTML = '';
+    
+    // Add empty th for weekday label column
+    const emptyTh = document.createElement('th');
+    headerRow.appendChild(emptyTh);
+    
+    // Add month headers with colspan for each month's weeks
+    let currentColumn = 0;
+    months.forEach((month, index) => {
+      const th = document.createElement('th');
+      th.textContent = month.name;
+      
+      // Calculate colspan: distance to next month or end of calendar
+      const nextColumn = index < months.length - 1 ? months[index + 1].column : totalWeeks;
+      const colspan = nextColumn - month.column;
+      
+      if (colspan > 0) {
+        th.setAttribute('colspan', String(colspan));
+      }
+      
+      headerRow.appendChild(th);
+    });
+  },
+
+  /**
+   * Render the 7 weekday rows with day cells
+   * @param {Array<CalendarDay>} days - Array of calendar day data
+   * @param {string[]} weekdays - Array of weekday labels
+   * @param {number} totalWeeks - Total number of weeks to display
+   */
+  renderWeekRows(days, weekdays, totalWeeks) {
+    const tbody = document.getElementById('calendar-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    
+    // Create 7 rows (one for each day of week)
+    for (let weekday = 0; weekday < 7; weekday++) {
+      const tr = document.createElement('tr');
+      
+      // Add weekday label as first cell
+      const th = document.createElement('th');
+      th.textContent = weekdays[weekday];
+      th.setAttribute('scope', 'row');
+      tr.appendChild(th);
+      
+      // Add day cells for this weekday across all weeks
+      for (let week = 0; week < totalWeeks; week++) {
+        const dayIndex = week * 7 + weekday;
+        const td = document.createElement('td');
+        
+        if (dayIndex < days.length) {
+          const day = days[dayIndex];
+          const dayElement = this.createDayElement(day);
+          td.appendChild(dayElement);
+        }
+        
+        tr.appendChild(td);
+      }
+      
+      tbody.appendChild(tr);
+    }
+  },
+
+  /**
+   * Create a single day element
+   * @param {CalendarDay} day - Calendar day data
+   * @returns {HTMLSpanElement} The day element
+   */
+  createDayElement(day) {
+    const span = document.createElement('span');
+    span.className = 'calendar-day';
+    span.setAttribute('data-level', String(day.level));
+    span.setAttribute('data-date', day.dateKey);
+    span.setAttribute('data-tooltip', day.tooltip);
+    span.setAttribute('aria-label', day.tooltip);
+    span.setAttribute('role', 'gridcell');
+    
+    return span;
+  },
+
+  /**
+   * Clear the calendar display
+   */
+  clear() {
+    const headerRow = document.getElementById('calendar-months');
+    const tbody = document.getElementById('calendar-body');
+    
+    if (headerRow) headerRow.innerHTML = '';
+    if (tbody) tbody.innerHTML = '';
+  }
+};

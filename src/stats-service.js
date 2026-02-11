@@ -8,8 +8,9 @@
 import { dbService } from './db-service.js';
 import { formatScore } from './score-manager.js';
 import { parseScoreAsInteger, categorizeScores, SPECIAL_SCORES } from './score-parsing-utils.js';
-import { ProgressUI, StatsDisplay } from './stats-dom-utils.js';
+import { ProgressUI, StatsDisplay, ActivityCalendar } from './stats-dom-utils.js';
 import { GAMES } from './game-config.js';
+import { calendarService } from './stats-calendar.js';
 
 /**
  * Statistics processing service
@@ -116,6 +117,29 @@ export class StatsService {
             return StatsDisplay.displayGameScores(gameId, categorizedScores);
 
         } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Display the activity calendar with all game data
+     * @returns {Promise<boolean>} True if calendar was displayed successfully
+     */
+    async displayActivityCalendar() {
+        try {
+            const allScores = await dbService.getAllScores();
+            
+            if (!allScores || allScores.length === 0) {
+                // Calendar will show empty if no data
+                return false;
+            }
+
+            const calendarData = calendarService.generateCalendarFromScores(allScores);
+            ActivityCalendar.render(calendarData);
+            
+            return true;
+        } catch (error) {
+            console.error('Error displaying activity calendar:', error);
             return false;
         }
     }

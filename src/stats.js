@@ -22,6 +22,9 @@ async function initializeStatsApplication() {
     // Initialize database connection
     await statsService.initialize()
 
+    // Display the activity calendar
+    await statsService.displayActivityCalendar()
+
     // Process any incomplete scores
     await statsService.processIncompleteScores()
 
