@@ -6,59 +6,283 @@
 
 import { exportDB, peakImportFile, importInto } from 'dexie-export-import';
 import { dbService } from './db-service.js';
+import { StatsDOMUtils } from './stats-dom-utils.js';
 
 import './style.css';
 import './stats-export.css';
 
+// ============================================================================
+// DOM UTILITIES
+// ============================================================================
+
 /**
- * Initialize the page and set up event listeners
+ * Export UI element getters and utilities
  */
-async function init() {
-    // Initialize database connection
-    await dbService.connect();
+const ExportUI = {
+  /**
+   * Get the export button element
+   * @returns {HTMLButtonElement|null}
+   */
+  getExportButton() {
+    return document.getElementById('exportBtn');
+  },
 
-    // Set up export button
-    const exportBtn = document.getElementById('exportBtn');
-    const exportStatus = document.getElementById('exportStatus');
+  /**
+   * Get the export status element
+   * @returns {HTMLElement|null}
+   */
+  getExportStatus() {
+    return document.getElementById('exportStatus');
+  },
 
-    exportBtn.addEventListener('click', async () => {
-        await handleExport(exportBtn, exportStatus);
-    });
+  /**
+   * Set export button state
+   * @param {boolean} enabled - Whether the button should be enabled
+   */
+  setButtonState(enabled) {
+    const button = this.getExportButton();
+    if (button) {
+      button.disabled = !enabled;
+    }
+  },
 
-    // Set up import elements
-    const importBtn = document.getElementById('importBtn');
-    const importFile = document.getElementById('importFile');
-    const importMetadata = document.getElementById('importMetadata');
-    const confirmImportBtn = document.getElementById('confirmImportBtn');
-    const importStatus = document.getElementById('importStatus');
+  /**
+   * Show export status message
+   * @param {string} message - Status message to display
+   * @param {'info'|'success'|'error'} type - Status type
+   */
+  showStatus(message, type = 'info') {
+    const statusElement = this.getExportStatus();
+    if (statusElement) {
+      statusElement.textContent = message;
+      statusElement.className = `status-${type}`;
+    }
+  }
+};
 
-    // Open file picker when import button is clicked
+/**
+ * Import UI element getters and utilities
+ */
+const ImportUI = {
+  /**
+   * Get the import button element
+   * @returns {HTMLButtonElement|null}
+   */
+  getImportButton() {
+    return document.getElementById('importBtn');
+  },
+
+  /**
+   * Get the file input element
+   * @returns {HTMLInputElement|null}
+   */
+  getFileInput() {
+    return document.getElementById('importFile');
+  },
+
+  /**
+   * Get the import metadata display element
+   * @returns {HTMLElement|null}
+   */
+  getMetadataDisplay() {
+    return document.getElementById('importMetadata');
+  },
+
+  /**
+   * Get the confirm import button element
+   * @returns {HTMLButtonElement|null}
+   */
+  getConfirmButton() {
+    return document.getElementById('confirmImportBtn');
+  },
+
+  /**
+   * Get the import status element
+   * @returns {HTMLElement|null}
+   */
+  getImportStatus() {
+    return document.getElementById('importStatus');
+  },
+
+  /**
+   * Set confirm button state
+   * @param {boolean} enabled - Whether the button should be enabled
+   */
+  setConfirmButtonState(enabled) {
+    const button = this.getConfirmButton();
+    if (button) {
+      button.disabled = !enabled;
+    }
+  },
+
+  /**
+   * Show or hide the confirm button
+   * @param {boolean} visible - Whether the button should be visible
+   */
+  setConfirmButtonVisibility(visible) {
+    const button = this.getConfirmButton();
+    if (button) {
+      if (visible) {
+        button.classList.remove('hidden');
+        button.style.display = '';
+      } else {
+        button.classList.add('hidden');
+        button.style.display = 'none';
+      }
+    }
+  },
+
+  /**
+   * Show import status message
+   * @param {string} message - Status message to display
+   * @param {'info'|'success'|'error'|'warning'} type - Status type
+   */
+  showStatus(message, type = 'info') {
+    const statusElement = this.getImportStatus();
+    if (statusElement) {
+      statusElement.textContent = message;
+      statusElement.className = `status-${type}`;
+    }
+  },
+
+  /**
+   * Clear import status message
+   */
+  clearStatus() {
+    const statusElement = this.getImportStatus();
+    if (statusElement) {
+      statusElement.textContent = '';
+    }
+  },
+
+  /**
+   * Display import metadata
+   * @param {string} htmlContent - HTML content to display
+   */
+  showMetadata(htmlContent) {
+    const metadataElement = this.getMetadataDisplay();
+    if (metadataElement) {
+      metadataElement.innerHTML = htmlContent;
+    }
+  },
+
+  /**
+   * Clear import metadata display
+   */
+  clearMetadata() {
+    const metadataElement = this.getMetadataDisplay();
+    if (metadataElement) {
+      metadataElement.textContent = '';
+    }
+  },
+
+  /**
+   * Clear the file input
+   */
+  clearFileInput() {
+    const fileInput = this.getFileInput();
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  },
+
+  /**
+   * Open the file picker
+   */
+  openFilePicker() {
+    const fileInput = this.getFileInput();
+    if (fileInput) {
+      fileInput.click();
+    }
+  },
+
+  /**
+   * Get the selected file
+   * @returns {File|null}
+   */
+  getSelectedFile() {
+    const fileInput = this.getFileInput();
+    return fileInput?.files[0] || null;
+  }
+};
+
+/**
+ * File download utilities
+ */
+const FileUtils = {
+  /**
+   * Trigger a file download
+   * @param {Blob} blob - The file blob to download
+   * @param {string} filename - The filename for the download
+   */
+  downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  },
+
+  /**
+   * Generate a timestamp-based filename
+   * @param {string} prefix - Filename prefix
+   * @param {string} extension - File extension (without dot)
+   * @returns {string} Generated filename
+   */
+  generateTimestampedFilename(prefix, extension) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    return `${prefix}-${timestamp}.${extension}`;
+  }
+};
+
+// ============================================================================
+// EVENT HANDLERS
+// ============================================================================
+
+/**
+ * Set up event listeners for export functionality
+ */
+function setupExportListeners() {
+  const exportBtn = ExportUI.getExportButton();
+  if (exportBtn) {
+    exportBtn.addEventListener('click', handleExport);
+  }
+}
+
+/**
+ * Set up event listeners for import functionality
+ */
+function setupImportListeners() {
+  const importBtn = ImportUI.getImportButton();
+  const fileInput = ImportUI.getFileInput();
+  const confirmBtn = ImportUI.getConfirmButton();
+
+  if (importBtn) {
     importBtn.addEventListener('click', () => {
-        importFile.click();
+      ImportUI.openFilePicker();
     });
+  }
 
-    // Handle file selection
-    importFile.addEventListener('change', async () => {
-        await handleFileSelect(importFile, importMetadata, confirmImportBtn, importStatus);
-    });
+  if (fileInput) {
+    fileInput.addEventListener('change', handleFileSelect);
+  }
 
-    // Handle import confirmation
-    confirmImportBtn.addEventListener('click', async () => {
-        await handleImport(importFile, confirmImportBtn, importStatus, importMetadata);
-    });
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', handleImport);
+  }
 }
 
 /**
  * Handle the export process
- * @param {HTMLButtonElement} exportBtn - The export button element
- * @param {HTMLElement} exportStatus - The status display element
  */
-async function handleExport(exportBtn, exportStatus) {
+async function handleExport() {
     try {
         // Disable button and show status
-        exportBtn.disabled = true;
-        exportStatus.textContent = 'Exporting...';
-        exportStatus.className = 'status-info';
+        ExportUI.setButtonState(false);
+        ExportUI.showStatus('Exporting...', 'info');
 
         // Get the database instance
         const db = dbService.getDatabase();
@@ -67,44 +291,28 @@ async function handleExport(exportBtn, exportStatus) {
         const blob = await exportDB(db);
 
         // Create filename with timestamp
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-        const filename = `titlequest-stats-${timestamp}.json`;
+        const filename = FileUtils.generateTimestampedFilename('titlequest-stats', 'json');
 
-        // Create download link and trigger download
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        
-        // Clean up
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // Trigger download
+        FileUtils.downloadBlob(blob, filename);
 
         // Show success message
-        exportStatus.textContent = `✅ Stats exported successfully to ${filename}`;
-        exportStatus.className = 'status-success';
+        ExportUI.showStatus(`✅ Stats exported successfully to ${filename}`, 'success');
 
     } catch (error) {
         console.error('Export failed:', error);
-        exportStatus.textContent = `❌ Export failed: ${error.message}`;
-        exportStatus.className = 'status-error';
+        ExportUI.showStatus(`❌ Export failed: ${error.message}`, 'error');
     } finally {
         // Re-enable button
-        exportBtn.disabled = false;
+        ExportUI.setButtonState(true);
     }
 }
 
 /**
  * Handle file selection and display metadata
- * @param {HTMLInputElement} importFile - The file input element
- * @param {HTMLElement} importMetadata - The metadata display element
- * @param {HTMLButtonElement} confirmImportBtn - The confirm import button
- * @param {HTMLElement} importStatus - The status display element
  */
-async function handleFileSelect(importFile, importMetadata, confirmImportBtn, importStatus) {
-    const file = importFile.files[0];
+async function handleFileSelect() {
+    const file = ImportUI.getSelectedFile();
     
     if (!file) {
         return;
@@ -112,13 +320,12 @@ async function handleFileSelect(importFile, importMetadata, confirmImportBtn, im
 
     try {
         // Clear previous messages
-        importStatus.textContent = '';
-        importMetadata.textContent = '';
-        confirmImportBtn.classList.add('hidden');
+        ImportUI.clearStatus();
+        ImportUI.clearMetadata();
+        ImportUI.setConfirmButtonVisibility(false);
 
         // Peek at the file metadata
-        importStatus.textContent = 'Reading file...';
-        importStatus.className = 'status-info';
+        ImportUI.showStatus('Reading file...', 'info');
 
         const importMeta = await peakImportFile(file);
 
@@ -127,11 +334,11 @@ async function handleFileSelect(importFile, importMetadata, confirmImportBtn, im
             throw new Error('Invalid file format. Please try again.');
         }
 
-        // Display metadata
+        // Build metadata display
         const tables = importMeta.data.tables || [];
         const tableInfo = tables.map(t => `${t.name} (${t.rowCount} rows)`).join(', ');
         
-        importMetadata.innerHTML = `
+        const metadataHTML = `
             <div class="import-metadata-box">
                 <strong>Database:</strong> ${importMeta.data.databaseName || 'Unknown'}<br>
                 <strong>Version:</strong> ${importMeta.data.databaseVersion || 'Unknown'}<br>
@@ -140,41 +347,36 @@ async function handleFileSelect(importFile, importMetadata, confirmImportBtn, im
             </div>
         `;
 
+        // Display metadata
+        ImportUI.showMetadata(metadataHTML);
+
         // Show confirmation button
-        confirmImportBtn.classList.remove('hidden');
-        importStatus.textContent = '⚠️ Ready to import. This will overwrite existing data.';
-        importStatus.className = 'status-warning';
+        ImportUI.setConfirmButtonVisibility(true);
+        ImportUI.showStatus('⚠️ Ready to import. This will overwrite existing data.', 'warning');
 
     } catch (error) {
         console.error('Failed to read file metadata:', error);
-        importMetadata.textContent = '';
-        confirmImportBtn.classList.add('hidden');
-        importStatus.textContent = `❌ Failed to read file: ${error.message}`;
-        importStatus.className = 'status-error';
+        ImportUI.clearMetadata();
+        ImportUI.setConfirmButtonVisibility(false);
+        ImportUI.showStatus(`❌ Failed to read file: ${error.message}`, 'error');
     }
 }
 
 /**
  * Handle the import process
- * @param {HTMLInputElement} importFile - The file input element
- * @param {HTMLButtonElement} confirmImportBtn - The confirm import button
- * @param {HTMLElement} importStatus - The status display element
- * @param {HTMLElement} importMetadata - The metadata display element
  */
-async function handleImport(importFile, confirmImportBtn, importStatus, importMetadata) {
-    const file = importFile.files[0];
+async function handleImport() {
+    const file = ImportUI.getSelectedFile();
     
     if (!file) {
-        importStatus.textContent = '❌ No file selected';
-        importStatus.className = 'status-error';
+        ImportUI.showStatus('❌ No file selected', 'error');
         return;
     }
 
     try {
         // Disable button and show status
-        confirmImportBtn.disabled = true;
-        importStatus.textContent = 'Importing data...';
-        importStatus.className = 'status-info';
+        ImportUI.setConfirmButtonState(false);
+        ImportUI.showStatus('Importing data...', 'info');
 
         // Get the database instance
         const db = dbService.getDatabase();
@@ -190,27 +392,42 @@ async function handleImport(importFile, confirmImportBtn, importStatus, importMe
         });
 
         // Show success message
-        importStatus.textContent = `✅ Stats imported successfully from ${file.name}`;
-        importStatus.className = 'status-success';
+        ImportUI.showStatus(`✅ Stats imported successfully from ${file.name}`, 'success');
 
         // Clear the file input and metadata
-        importFile.value = '';
-        importMetadata.textContent = '';
-        confirmImportBtn.classList.add('hidden');
+        ImportUI.clearFileInput();
+        ImportUI.clearMetadata();
+        ImportUI.setConfirmButtonVisibility(false);
 
     } catch (error) {
         console.error('Import failed:', error);
-        importStatus.textContent = `❌ Import failed: ${error.message}`;
-        importStatus.className = 'status-error';
+        ImportUI.showStatus(`❌ Import failed: ${error.message}`, 'error');
     } finally {
         // Re-enable button
-        confirmImportBtn.disabled = false;
+        ImportUI.setConfirmButtonState(true);
     }
 }
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
+// ============================================================================
+// APPLICATION INITIALIZATION
+// ============================================================================
+
+/**
+ * Initialize the stats export/import application
+ */
+async function initializeExportApplication() {
+    // Initialize database connection
+    await dbService.connect();
+
+    // Set up event listeners
+    setupExportListeners();
+    setupImportListeners();
 }
+
+// ============================================================================
+// APPLICATION STARTUP
+// ============================================================================
+
+// Initialize the application when DOM is ready
+StatsDOMUtils.onDOMReady(initializeExportApplication);
+
