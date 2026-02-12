@@ -54,7 +54,7 @@ export function generateCalendarDates(weeks = WEEKS_TO_DISPLAY) {
   // Generate dates going back from the most recent Sunday
   const totalDays = weeks * 7;
   const startDate = new Date(mostRecentSunday);
-  startDate.setDate(mostRecentSunday.getDate() - totalDays + 1);
+  startDate.setDate(mostRecentSunday.getDate() - totalDays);
   
   for (let i = 0; i < totalDays; i++) {
     const date = new Date(startDate);
