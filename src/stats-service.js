@@ -127,9 +127,9 @@ export class StatsService {
      */
     async displayActivityCalendar() {
         try {
-            const allScores = await dbService.getAllScores();
+            const allScores = await dbService.countScoresByDate();
             
-            if (!allScores || allScores.length === 0) {
+            if (!allScores || Object.keys(allScores).length === 0) {
                 // Calendar will show empty if no data
                 return false;
             }

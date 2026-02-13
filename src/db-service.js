@@ -54,14 +54,15 @@ class DbService {
      * @returns {Promise<Record<string, number>>} A record mapping round numbers to counts
      */
     async getScoresForGame(game) {
-        const gameScores = await this.#database.raw.where('game').equals(game).toArray();
-        const scoresByDate = gameScores.reduce((acc, curr) => {
-            const date = curr.date;
-            if (!acc[date] || curr.intScore < acc[date]) {
-                acc[date] = curr.intScore;
+        const scoresByDate = {};
+        await this.#database.raw.where('game').equals(game).each(
+            scoreEntry => {
+                const date = scoreEntry.date;
+                if (!scoresByDate[date] || scoreEntry.intScore < scoresByDate[date]) {
+                    scoresByDate[date] = scoreEntry.intScore;
+                }
             }
-            return acc;
-        }, {});
+        );
         const gameScoresByRound = Object.values(scoresByDate).reduce((acc, curr) => {
             const round = String(curr);
             acc[round] = (acc[round] || 0) + 1;
@@ -71,11 +72,25 @@ class DbService {
     }
 
     /**
-     * Get all scores from the database
-     * @returns {Promise<Array>} All score entries
+     * Get aggregated counts of unique games played by date
+     * @returns {Promise<Record<string, number>>} A record mapping dates to counts of unique games
      */
-    async getAllScores() {
-        return await this.#database.raw.toArray();
+    async countScoresByDate() {
+        const gamesByDate = {};
+        await this.#database.raw.each(scoreEntry => {
+            const date = scoreEntry.date;
+            if (!gamesByDate[date]) {
+                // Use a Set to avoid counting duplicate games on the same date
+                gamesByDate[date] = new Set();
+            }
+            gamesByDate[date].add(scoreEntry.game);
+        });
+
+        const countsByDate = Object.entries(gamesByDate).reduce((acc, [date, games]) => {
+            acc[date] = games.size;
+            return acc;
+        }, {});
+        return countsByDate;
     }
 
     /**

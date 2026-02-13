@@ -1,8 +1,9 @@
 article {
-    margin: 2rem 0;
-    padding: 1.5rem;
+    margin-top: var(--space-1x);
+    padding: var(--space-1x);
     border: 1px solid var(--color-input-border);
     border-radius: 8px;
+    min-width: 80%;
 }
 
 article h3 {

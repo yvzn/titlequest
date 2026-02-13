@@ -123,17 +123,14 @@ export function getWeekdayLabels() {
 
 /**
  * Process activity data from the database into a calendar-friendly format
- * @param {Array<{date: string}>} allScores - All score records from database
+ * @param {Record<string, number>} allScores - A record mapping dates to counts of unique games
  * @returns {Map<string, number>} Map of date strings to game counts
  */
 export function processActivityData(allScores) {
   const activityMap = new Map();
   
-  // Count games per day
-  allScores.forEach(score => {
-    const dateKey = score.date; // Assuming date is already in YYYY-MM-DD format
-    const currentCount = activityMap.get(dateKey) || 0;
-    activityMap.set(dateKey, currentCount + 1);
+  Object.entries(allScores).forEach(([date, count]) => {
+    activityMap.set(date, count);
   });
   
   return activityMap;
@@ -181,7 +178,7 @@ export function generateCalendarData(dates, activityMap) {
 export class CalendarService {
   /**
    * Generate complete calendar data from database scores
-   * @param {Array} allScores - All score records from database
+   * @param {Record<string, number>} allScores - A record mapping dates to counts of unique games
    * @returns {Object} Calendar data including days, months, and weekdays
    */
   generateCalendarFromScores(allScores) {

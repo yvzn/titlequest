@@ -124,10 +124,8 @@ const ImportUI = {
     if (button) {
       if (visible) {
         button.classList.remove('hidden');
-        button.style.display = '';
       } else {
         button.classList.add('hidden');
-        button.style.display = 'none';
       }
     }
   },
