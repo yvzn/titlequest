@@ -12,6 +12,10 @@ progress {
     accent-color: var(--color-txt-muted);
 }
 
+section:first-of-type {
+    grid-column: 1/3;
+}
+
 section:first-of-type fieldset {
     width: 18rem;
 }
@@ -84,7 +88,7 @@ footer a span {
 
 /* Activity Calendar Styles */
 .activity-calendar {
-  margin: var(--space-1x) 0 0 0;
+  margin: var(--space-1x) auto 0 auto;
   padding: .5em;
   min-width: 20rem;
 }

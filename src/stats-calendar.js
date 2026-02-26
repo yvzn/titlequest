@@ -7,9 +7,28 @@
  */
 
 /**
- * Calculate the number of weeks to display (last 52 weeks)
+ * Responsive week counts for the activity calendar.
+ * Keys are max-width breakpoints (px); values are the number of weeks to display.
+ * Entries must be ordered from smallest to largest breakpoint.
+ * The last entry acts as the default (no upper bound).
  */
-const WEEKS_TO_DISPLAY = 52;
+const WEEKS_TO_DISPLAY = {
+  1024: 26,   // ~6 months
+  1440: 39,   // ~9 months
+  Infinity: 52   // ~12 months
+};
+
+/**
+ * Return the number of weeks to display based on the current viewport width
+ * @returns {number} Number of weeks
+ */
+export function getWeeksToDisplay() {
+  const width = window.innerWidth;
+  for (const [breakpoint, weeks] of Object.entries(WEEKS_TO_DISPLAY)) {
+    if (width < Number(breakpoint)) return weeks;
+  }
+  return WEEKS_TO_DISPLAY[Infinity];
+}
 
 /**
  * Activity level thresholds
@@ -41,21 +60,34 @@ export function getActivityLevel(count) {
  * @param {number} weeks - Number of weeks to generate
  * @returns {Date[]} Array of Date objects
  */
-export function generateCalendarDates(weeks = WEEKS_TO_DISPLAY) {
+export function generateCalendarDates(weeks = getWeeksToDisplay()) {
+  console.log(`Generating calendar for the last ${weeks} weeks`);
   const dates = [];
   const today = new Date();
-  
-  // Find the most recent Sunday
+  today.setHours(0, 0, 0, 0);
+
+  // Find the most recent Sunday (start of current week)
   const dayOfWeek = today.getDay();
-  const mostRecentSunday = new Date(today);
-  mostRecentSunday.setDate(today.getDate() - dayOfWeek);
-  mostRecentSunday.setHours(0, 0, 0, 0);
-  
-  // Generate dates going back from the most recent Sunday
-  const totalDays = weeks * 7;
-  const startDate = new Date(mostRecentSunday);
-  startDate.setDate(mostRecentSunday.getDate() - totalDays);
-  
+  const startOfCurrentWeek = new Date(today);
+  startOfCurrentWeek.setDate(today.getDate() - dayOfWeek);
+
+  // Go back N weeks from the start of the current week
+  const startDate = new Date(startOfCurrentWeek);
+  startDate.setDate(startOfCurrentWeek.getDate() - weeks * 7);
+
+  // Ensure the first month spans at least 2 columns (weeks).
+  // If the very next Sunday falls in a different month, the first month would
+  // only occupy a single column, making the 3-letter month header overflow.
+  // Fix: push the start date back by one more week in that case.
+  const secondWeekStart = new Date(startDate);
+  secondWeekStart.setDate(startDate.getDate() + 7);
+  if (secondWeekStart.getMonth() !== startDate.getMonth()) {
+    startDate.setDate(startDate.getDate() - 7);
+  }
+
+  // Generate dates from startDate up to and including today
+  const totalDays = Math.round((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
   for (let i = 0; i < totalDays; i++) {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + i);
