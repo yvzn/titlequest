@@ -240,6 +240,10 @@ function initializeDatabaseFeatures() {
     // Add database save functionality to textareas
     allTextareas.forEach(textarea => {
       textarea.addEventListener('change', (event) => {
+        if (event.detail && event.detail.fromDatabase) {
+          // Skip saving to database if the change originated from loading saved data
+          return;
+        }
         saveScoreToDatabase(event, dbService);
       });
     });
@@ -263,7 +267,7 @@ async function loadSavedScoreFromDatabase(textarea, dbService) {
 
   if (savedScore !== null) {
     textarea.value = savedScore;
-    const changeEvent = new Event('change', { bubbles: true });
+    const changeEvent = new CustomEvent('change', { bubbles: true, detail: { fromDatabase: true } });
     textarea.dispatchEvent(changeEvent);
   }
 }
