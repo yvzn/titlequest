@@ -15,6 +15,7 @@ export default defineConfig({
                 stats: resolve(__dirname, 'stats.html'),
                 statsExport: resolve(__dirname, 'stats-export.html'),
                 redirect: resolve(__dirname, 'redirect/index.html'),
+                snake: resolve(__dirname, 'snake.html'),
             }
         }
     },

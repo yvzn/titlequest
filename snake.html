@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <title>🐍 Snake - Title Quest</title>
+    <base target="_self">
+</head>
+
+<body>
+    <form>
+        <h1>
+            <a href="/" target="_top">Title Quest</a>
+        </h1>
+        <nav>
+            <a href="index.html">Back</a>
+        </nav>
+
+        <section>
+            <h2>🐍 Snake</h2>
+
+            <article class="game-wrapper">
+                <div class="score-bar">
+                    <span>Score: <strong id="score">0</strong></span>
+                    <span>Best: <strong id="best-score">0</strong></span>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="game-canvas"></canvas>
+                    <div id="overlay" class="overlay">
+                        <div class="overlay-content">
+                            <p class="overlay-title" id="overlay-title">🐍 Snake</p>
+                            <p class="overlay-message" id="overlay-message">Collect the game icons to grow longer!</p>
+                            <button id="start-btn" type="button">Start Game</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-hint">
+                    <p>⬆️⬇️⬅️➡️ Arrow keys &nbsp;·&nbsp; WASD &nbsp;·&nbsp; P to pause &nbsp;·&nbsp; Space / Enter to start</p>
+                    <p class="touch-hint">Swipe to change direction</p>
+                </div>
+            </article>
+        </section>
+    </form>
+
+    <script type="module" src="/src/snake.js"></script>
+</body>
+
+</html>
