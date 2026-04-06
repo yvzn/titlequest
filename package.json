@@ -15,7 +15,7 @@
     "@vitejs/plugin-legacy": "^7.2.1",
     "rimraf": "^6.0.1",
     "terser": "^5.43.1",
-    "vite": "^7.1.11"
+    "vite": "^7.3.2"
   },
   "dependencies": {
     "dexie": "^4.2.0",
