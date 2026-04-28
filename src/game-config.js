@@ -16,7 +16,6 @@ export const GAMES = new Map([
   ['gaps', 'Gaps'],
   ['episode', 'Episode'],
   ['faces', 'Faces'],
-  ['guessthebook', 'Guess The Book'],
   ['bandle', 'Bandle']
 ]);
 
@@ -49,7 +48,6 @@ const TEXT_VALIDATORS = new Map([
   ['gaps', /Gaps\s+#/],
   ['episode', /Episode #/],
   ['faces', /Faces #/],
-  ['guessthebook', /GuessTheBook #/],
   ['bandle', /Bandle #/],
 ]);
 
